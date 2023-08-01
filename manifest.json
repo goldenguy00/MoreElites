@@ -1,0 +1,14 @@
+﻿{
+  "name": "MoreElites",
+  "version_number": "0.8.0",
+  "website_url": "",
+  "description": "Adds 3 new elites",
+  "dependencies": [
+    "RiskofThunder-R2API_Language-1.0.1",
+    "RiskofThunder-R2API_Items-1.0.3",
+    "RiskofThunder-R2API_Prefab-1.0.3",
+    "RiskofThunder-R2API_ContentManagement-1.0.2",
+    "RiskofThunder-R2API_Elites-1.0.3",
+    "RiskofThunder-R2API_RecalculateStats-1.2.0"
+  ]
+}
