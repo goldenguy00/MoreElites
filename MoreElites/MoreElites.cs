@@ -1,12 +1,12 @@
 using BepInEx;
 using BepInEx.Configuration;
-using RoR2;
+using System.Reflection;
+using System.Collections.Generic;
 using R2API;
-using UnityEngine;
 
 namespace MoreElites
 {
-  [BepInPlugin("com.Nuxlar.MoreElites", "MoreElites", "0.8.0")]
+  [BepInPlugin("com.Nuxlar.MoreElites", "MoreElites", "0.8.2")]
   [BepInDependency(ItemAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency(LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency(EliteAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
@@ -29,8 +29,9 @@ namespace MoreElites
       enableEcho = MEConfig.Bind<bool>("General", "Enable Echo", true, "Should enable the Echo Elite (Shadow Clone Elite)");
       enableEmpowering = MEConfig.Bind<bool>("General", "Enable Empowering", true, "Should enable the Empowering Elite (Warbanner Elite)");
       enableFrenzied = MEConfig.Bind<bool>("General", "Enable Frenzied", true, "Should enable the Frenzied Elite (RoR1 Elite)");
-      t2HealthMult = Config.Bind<float>("Stats", "T2 Health Multiplier", 18f, "Vanilla T2 is 18. A good alt is 12. Does not affect vanilla T2s.");
-      t2DamageMult = Config.Bind<float>("Stats", "T2 Damage Multiplier", 6f, "Vanilla T2 is 6. A good alt is 3.5. Does not affect vanilla T2s.");
+      t2HealthMult = MEConfig.Bind<float>("General", "T2 Health Multiplier", 18f, "Vanilla T2 is 18. A good alt is 12. Does not affect vanilla T2s.");
+      t2DamageMult = MEConfig.Bind<float>("General", "T2 Damage Multiplier", 6f, "Vanilla T2 is 6. A good alt is 3.5. Does not affect vanilla T2s.");
+      WipeConfig(MEConfig);
 
       if (enableEcho.Value)
         new Echo();
@@ -38,6 +39,15 @@ namespace MoreElites
         new Empowering();
       if (enableFrenzied.Value)
         new Frenzied();
+    }
+
+    private void WipeConfig(ConfigFile configFile)
+    {
+      PropertyInfo orphanedEntriesProp = typeof(ConfigFile).GetProperty("OrphanedEntries", BindingFlags.Instance | BindingFlags.NonPublic);
+      Dictionary<ConfigDefinition, string> orphanedEntries = (Dictionary<ConfigDefinition, string>)orphanedEntriesProp.GetValue(configFile);
+      orphanedEntries.Clear();
+
+      configFile.Save();
     }
 
   }

@@ -26,6 +26,10 @@ No aspect drop chance just yet. There's a config for disabling specific elites a
 
 ## Changelog
 
+**0.8.2**
+
+- Fixed the config and Echo Elites can spawn now
+
 **0.8.1**
 
 - Makes Echo T2
