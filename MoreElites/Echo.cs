@@ -17,8 +17,8 @@ namespace MoreElites
     public static BuffDef AffixEchoBuff;
     public static EliteDef AffixEchoElite;
     public static ItemDef SummonedEcho = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
-    public static float healthMult = 4f;
-    public static float damageMult = 2f;
+    public static float healthMult = MoreElites.t2HealthMult.Value;
+    public static float damageMult = MoreElites.t2DamageMult.Value;
     public static float affixDropChance = 0f;
     private static GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/InDev/EchoHunterProjectile.prefab").WaitForCompletion();
     private static GameObject celestineHalo = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/DisplayEliteStealthCrown.prefab").WaitForCompletion(), "EchoCrown");
@@ -49,16 +49,9 @@ namespace MoreElites
     private void CombatDirector_Init(On.RoR2.CombatDirector.orig_Init orig)
     {
       orig();
-      if (EliteAPI.VanillaEliteTiers.Length > 2)
+      if (EliteAPI.VanillaEliteTiers.Length > 3)
       {
-        CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[2];
-        List<EliteDef> elites = targetTier.eliteTypes.ToList();
-        elites.Add(AffixEchoElite);
-        targetTier.eliteTypes = elites.ToArray();
-      }
-      if (EliteAPI.VanillaEliteTiers.Length > 1)
-      {
-        CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[1];
+        CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[3];
         List<EliteDef> elites = targetTier.eliteTypes.ToList();
         elites.Add(AffixEchoElite);
         targetTier.eliteTypes = elites.ToArray();

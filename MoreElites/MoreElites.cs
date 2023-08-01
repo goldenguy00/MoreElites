@@ -19,6 +19,8 @@ namespace MoreElites
     public static ConfigEntry<bool> enableEcho;
     public static ConfigEntry<bool> enableEmpowering;
     public static ConfigEntry<bool> enableFrenzied;
+    public static ConfigEntry<float> t2HealthMult;
+    public static ConfigEntry<float> t2DamageMult;
     private static ConfigFile MEConfig { get; set; }
 
     public void Awake()
@@ -27,6 +29,8 @@ namespace MoreElites
       enableEcho = MEConfig.Bind<bool>("General", "Enable Echo", true, "Should enable the Echo Elite (Shadow Clone Elite)");
       enableEmpowering = MEConfig.Bind<bool>("General", "Enable Empowering", true, "Should enable the Empowering Elite (Warbanner Elite)");
       enableFrenzied = MEConfig.Bind<bool>("General", "Enable Frenzied", true, "Should enable the Frenzied Elite (RoR1 Elite)");
+      t2HealthMult = Config.Bind<float>("Stats", "T2 Health Multiplier", 18f, "Vanilla T2 is 18. A good alt is 12. Does not affect vanilla T2s.");
+      t2DamageMult = Config.Bind<float>("Stats", "T2 Damage Multiplier", 6f, "Vanilla T2 is 6. A good alt is 3.5. Does not affect vanilla T2s.");
 
       if (enableEcho.Value)
         new Echo();
