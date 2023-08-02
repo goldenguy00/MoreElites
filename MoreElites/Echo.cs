@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 
 namespace MoreElites
@@ -23,12 +24,14 @@ namespace MoreElites
     private static GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/InDev/EchoHunterProjectile.prefab").WaitForCompletion();
     private static GameObject celestineHalo = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/DisplayEliteStealthCrown.prefab").WaitForCompletion(), "EchoCrown");
     private static Material echoMat = Addressables.LoadAssetAsync<Material>("RoR2/InDev/matEcho.mat").WaitForCompletion();
+    private static Material overlayMat = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/voidoutro/matVoidRaidCrabEyeOverlay1BLUE.mat").WaitForCompletion();
     private static Texture2D eliteRamp = Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampShadowClone.png").WaitForCompletion();
     private static Sprite eliteIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
-    // RoR2/Base/Common/ColorRamps/texRampWarbanner.png RoR2/DLC1/Common/ColorRamps/texRampVoidArenaShield.png
+    // RoR2/Base/Common/ColorRamps/texRampWarbanner.png RoR2/DLC1/Common/ColorRamps/texRampVoidArenaShield.png RoR2/Base/artifactworld/matArtifactShellOverlay.mat
 
     public Echo()
     {
+      celestineHalo.AddComponent<NetworkIdentity>();
       this.AddLanguageTokens();
       this.SetupBuff();
       this.SetupEquipment();
@@ -36,8 +39,6 @@ namespace MoreElites
       this.AddContent();
       EliteRamp.AddRamp(AffixEchoElite, eliteRamp);
       ContentAddition.AddItemDef(SummonedEcho);
-      ContentAddition.AddEliteDef(AffixEchoElite);
-      ContentAddition.AddBuffDef(AffixEchoBuff);
       RecalculateStatsAPI.GetStatCoefficients += ReduceSummonHP;
       On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
       On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
@@ -78,9 +79,16 @@ namespace MoreElites
     private void CharacterModel_UpdateOverlays(On.RoR2.CharacterModel.orig_UpdateOverlays orig, CharacterModel self)
     {
       orig(self);
-      if (self.body)
+      if (self.body && self.body.inventory)
       {
         if (self.activeOverlayCount >= CharacterModel.maxOverlays) return;
+        if (self.body.HasBuff(AffixEchoBuff))
+        {
+          Material[] array = self.currentOverlays;
+          int num = self.activeOverlayCount;
+          self.activeOverlayCount = num + 1;
+          array[num] = overlayMat;
+        }
         if (self.body.inventory.GetItemCount(SummonedEcho) > 0)
         {
           Material[] array = self.currentOverlays;

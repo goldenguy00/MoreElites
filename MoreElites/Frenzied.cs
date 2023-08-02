@@ -4,6 +4,7 @@ using RoR2.Navigation;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 
 namespace MoreElites
@@ -29,6 +30,7 @@ namespace MoreElites
 
     public Frenzied()
     {
+      celestineHalo.AddComponent<NetworkIdentity>();
       FrenziedWard.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = FrenziedMat;
       this.AddLanguageTokens();
       this.SetupBuff();
@@ -36,8 +38,6 @@ namespace MoreElites
       this.SetupElite();
       this.AddContent();
       EliteRamp.AddRamp(AffixFrenziedElite, eliteRamp);
-      ContentAddition.AddEliteDef(AffixFrenziedElite);
-      ContentAddition.AddBuffDef(AffixFrenziedBuff);
       RecalculateStatsAPI.GetStatCoefficients += Frenzy;
       On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
       On.RoR2.CharacterBody.OnBuffFinalStackLost += CharacterBody_OnBuffFinalStackLost;

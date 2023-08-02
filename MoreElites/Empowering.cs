@@ -18,7 +18,7 @@ namespace MoreElites
     public static float affixDropChance = 0f;
     private static GameObject EmpoweringWard = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/AffixHauntedWard.prefab").WaitForCompletion(), "EmpoweringWard");
     private static Material empoweringMat = Addressables.LoadAssetAsync<Material>("RoR2/Base/WardOnLevel/matWarbannerBuffRing.mat").WaitForCompletion();
-    private static Texture2D eliteRamp = Addressables.LoadAssetAsync<Texture2D>("RoR2/DLC1/Common/ColorRamps/texRampConstructLaserTypeB.png").WaitForCompletion();
+    private static Texture2D eliteRamp = Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampMagmaWorm.png").WaitForCompletion();
     private static Sprite eliteIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
     // RoR2/Base/Common/ColorRamps/texRampWarbanner.png 
 
@@ -31,9 +31,7 @@ namespace MoreElites
       this.SetupElite();
       this.AddContent();
       EliteRamp.AddRamp(AffixEmpoweringElite, eliteRamp);
-      ContentAddition.AddEliteDef(AffixEmpoweringElite);
       ContentAddition.AddEquipmentDef(AffixEmpoweringEquipment);
-      ContentAddition.AddBuffDef(AffixEmpoweringBuff);
       On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
       On.RoR2.CharacterBody.OnBuffFinalStackLost += CharacterBody_OnBuffFinalStackLost;
       On.RoR2.CombatDirector.Init += CombatDirector_Init;

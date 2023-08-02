@@ -1,6 +1,6 @@
 # More Elites
 
-No aspect drop chance just yet. There's a config for disabling specific elites and the Tier 2 HP/Damage Multipliers.
+No aspect drop chance just yet. There's a config for disabling specific elites and the Tier 2 HP/Damage Multipliers. Will fix crown displays at some point, some may be wonky.
 
 ## Tier 1
 
@@ -25,6 +25,13 @@ No aspect drop chance just yet. There's a config for disabling specific elites a
 ![3 elite beetles](https://i.ibb.co/4NJqjwk/moreelites.png)
 
 ## Changelog
+
+**0.8.3**
+
+- Fixed Acqueducts bug
+- Fixed crowns not showing up
+- Added overlay to Echo Elites
+- Changed Empowering Elite Ramp
 
 **0.8.2**
 
