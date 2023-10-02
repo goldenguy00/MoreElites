@@ -15,7 +15,7 @@ namespace MoreElites
     public static EliteDef AffixEmpoweringElite;
     public static float healthMult = 4f;
     public static float damageMult = 2f;
-    public static float affixDropChance = 0f;
+    public static float affixDropChance = 0.00025f;
     private static GameObject EmpoweringWard = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/AffixHauntedWard.prefab").WaitForCompletion(), "EmpoweringWard");
     private static Material empoweringMat = Addressables.LoadAssetAsync<Material>("RoR2/Base/WardOnLevel/matWarbannerBuffRing.mat").WaitForCompletion();
     private static Texture2D eliteRamp = Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampMagmaWorm.png").WaitForCompletion();
@@ -42,8 +42,11 @@ namespace MoreElites
       orig();
       if (EliteAPI.VanillaEliteTiers.Length > 2)
       {
+        // HONOR
         CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[2];
         List<EliteDef> elites = targetTier.eliteTypes.ToList();
+        AffixEmpoweringElite.healthBoostCoefficient = 2.5f;
+        AffixEmpoweringElite.damageBoostCoefficient = 1.5f;
         elites.Add(AffixEmpoweringElite);
         targetTier.eliteTypes = elites.ToArray();
       }
@@ -51,6 +54,8 @@ namespace MoreElites
       {
         CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[1];
         List<EliteDef> elites = targetTier.eliteTypes.ToList();
+        AffixEmpoweringElite.healthBoostCoefficient = 4f;
+        AffixEmpoweringElite.damageBoostCoefficient = 2f;
         elites.Add(AffixEmpoweringElite);
         targetTier.eliteTypes = elites.ToArray();
       }
@@ -116,7 +121,7 @@ namespace MoreElites
       AffixEmpoweringEquipment.isLunar = false;
       AffixEmpoweringEquipment.isBoss = false;
       AffixEmpoweringEquipment.passiveBuffDef = AffixEmpoweringBuff;
-      AffixEmpoweringEquipment.dropOnDeathChance = affixDropChance * 0.01f;
+      AffixEmpoweringEquipment.dropOnDeathChance = affixDropChance;
       AffixEmpoweringEquipment.enigmaCompatible = false;
       AffixEmpoweringEquipment.pickupModelPrefab = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion(), "PickupAffixEmpowering", false);
       foreach (Renderer componentsInChild in AffixEmpoweringEquipment.pickupModelPrefab.GetComponentsInChildren<Renderer>())

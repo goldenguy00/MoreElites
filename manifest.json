@@ -1,7 +1,7 @@
 ﻿{
   "name": "MoreElites",
-  "version_number": "0.8.3",
-  "website_url": "",
+  "version_number": "0.8.5",
+  "website_url": "https://github.com/FocusedFault/MoreElites",
   "description": "Adds 3 new elites",
   "dependencies": [
     "RiskofThunder-R2API_Language-1.0.1",

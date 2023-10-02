@@ -18,7 +18,7 @@ namespace MoreElites
     public static EliteDef AffixFrenziedElite;
     public static float healthMult = 4f;
     public static float damageMult = 2f;
-    public static float affixDropChance = 0f;
+    public static float affixDropChance = 0.00025f;
     private static GameObject FrenziedWard = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/AffixHauntedWard.prefab").WaitForCompletion(), "FrenziedWard");
     private static GameObject celestineHalo = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ElitePoison/DisplayEliteUrchinCrown.prefab").WaitForCompletion(), "FrenziedCrown");
     private static Material warbannerMat = Addressables.LoadAssetAsync<Material>("RoR2/Base/WardOnLevel/matWarbannerSphereIndicator.mat").WaitForCompletion();
@@ -49,8 +49,11 @@ namespace MoreElites
       orig();
       if (EliteAPI.VanillaEliteTiers.Length > 2)
       {
+        // HONOR
         CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[2];
         List<EliteDef> elites = targetTier.eliteTypes.ToList();
+        AffixFrenziedElite.healthBoostCoefficient = 2.5f;
+        AffixFrenziedElite.damageBoostCoefficient = 1.5f;
         elites.Add(AffixFrenziedElite);
         targetTier.eliteTypes = elites.ToArray();
       }
@@ -58,6 +61,8 @@ namespace MoreElites
       {
         CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[1];
         List<EliteDef> elites = targetTier.eliteTypes.ToList();
+        AffixFrenziedElite.healthBoostCoefficient = 4f;
+        AffixFrenziedElite.damageBoostCoefficient = 2f;
         elites.Add(AffixFrenziedElite);
         targetTier.eliteTypes = elites.ToArray();
       }
@@ -127,7 +132,7 @@ namespace MoreElites
       AffixFrenziedEquipment.isLunar = false;
       AffixFrenziedEquipment.isBoss = false;
       AffixFrenziedEquipment.passiveBuffDef = AffixFrenziedBuff;
-      AffixFrenziedEquipment.dropOnDeathChance = affixDropChance * 0.01f;
+      AffixFrenziedEquipment.dropOnDeathChance = affixDropChance;
       AffixFrenziedEquipment.enigmaCompatible = false;
       AffixFrenziedEquipment.pickupModelPrefab = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion(), "PickupAffixFrenzied", false);
       foreach (Renderer componentsInChild in AffixFrenziedEquipment.pickupModelPrefab.GetComponentsInChildren<Renderer>())
@@ -213,7 +218,11 @@ namespace MoreElites
         bullseyeSearch.RefreshCandidates();
         HurtBox hurtBox = bullseyeSearch.GetResults().FirstOrDefault<HurtBox>();
         if ((bool)(UnityEngine.Object)hurtBox)
-          vector3 = hurtBox.transform.position - this.transform.position;
+        {
+          Vector3 center = hurtBox.transform.position - this.transform.position;
+          float radius = 15f;
+          vector3 = center + (Vector3)(radius * UnityEngine.Random.insideUnitCircle);
+        }
         else if (this.body.inputBank)
           vector3 = this.body.inputBank.moveVector * this.shortBlinkDistance;
         this.blinkDestination = this.transform.position;

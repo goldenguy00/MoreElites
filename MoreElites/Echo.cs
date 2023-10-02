@@ -20,7 +20,7 @@ namespace MoreElites
     public static ItemDef SummonedEcho = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
     public static float healthMult = MoreElites.t2HealthMult.Value;
     public static float damageMult = MoreElites.t2DamageMult.Value;
-    public static float affixDropChance = 0f;
+    public static float affixDropChance = 0.00025f;
     private static GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/InDev/EchoHunterProjectile.prefab").WaitForCompletion();
     private static GameObject celestineHalo = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/DisplayEliteStealthCrown.prefab").WaitForCompletion(), "EchoCrown");
     private static Material echoMat = Addressables.LoadAssetAsync<Material>("RoR2/InDev/matEcho.mat").WaitForCompletion();

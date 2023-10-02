@@ -1,6 +1,8 @@
 # More Elites
 
-No aspect drop chance just yet. There's a config for disabling specific elites and the Tier 2 HP/Damage Multipliers. Will fix crown displays at some point, some may be wonky.
+**SUBMIT ANY ISSUES USING THE LINK ABOVE**
+
+There's a config for disabling specific elites and the Tier 2 HP/Damage Multipliers. Will fix crown displays at some point, some may be wonky.
 
 ## Tier 1
 
@@ -25,6 +27,12 @@ No aspect drop chance just yet. There's a config for disabling specific elites a
 ![3 elite beetles](https://i.ibb.co/4NJqjwk/moreelites.png)
 
 ## Changelog
+
+**0.8.5**
+
+- Adds a drop chance to the aspects
+- Fixes Honor version of Empowering and Frenzied elites not having the correct damage/hp multipliers
+- Enhances Frenzied TP to tp within a range around the player instead of directly on top of them
 
 **0.8.3**
 
