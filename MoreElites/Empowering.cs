@@ -20,6 +20,7 @@ namespace MoreElites
     private static Material empoweringMat = Addressables.LoadAssetAsync<Material>("RoR2/Base/WardOnLevel/matWarbannerBuffRing.mat").WaitForCompletion();
     private static Texture2D eliteRamp = Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampMagmaWorm.png").WaitForCompletion();
     private static Sprite eliteIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
+    private static Sprite aspectIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
     // RoR2/Base/Common/ColorRamps/texRampWarbanner.png 
 
     public Empowering()
@@ -107,6 +108,7 @@ namespace MoreElites
       AffixEmpoweringBuff.isDebuff = false;
       AffixEmpoweringBuff.buffColor = AffixEmpoweringColor;
       AffixEmpoweringBuff.iconSprite = eliteIcon;
+      (AffixEmpoweringBuff as UnityEngine.Object).name = AffixEmpoweringBuff.name;
     }
 
     private void SetupEquipment()
@@ -123,11 +125,16 @@ namespace MoreElites
       AffixEmpoweringEquipment.passiveBuffDef = AffixEmpoweringBuff;
       AffixEmpoweringEquipment.dropOnDeathChance = affixDropChance;
       AffixEmpoweringEquipment.enigmaCompatible = false;
+      AffixEmpoweringEquipment.pickupIconSprite = aspectIcon;
       AffixEmpoweringEquipment.pickupModelPrefab = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion(), "PickupAffixEmpowering", false);
       foreach (Renderer componentsInChild in AffixEmpoweringEquipment.pickupModelPrefab.GetComponentsInChildren<Renderer>())
         componentsInChild.material = empoweringMat;
       AffixEmpoweringEquipment.nameToken = "EQUIPMENT_AFFIX_EMPOWERING_NAME";
       AffixEmpoweringEquipment.name = "AffixEmpowering";
+
+      AffixEmpoweringEquipment.pickupToken = "Aspect of Empowering";
+      AffixEmpoweringEquipment.descriptionToken = "Buffed move/atk speed of allies";
+      AffixEmpoweringEquipment.loreToken = "";
     }
 
     private void SetupElite()
@@ -140,6 +147,7 @@ namespace MoreElites
       AffixEmpoweringElite.healthBoostCoefficient = healthMult;
       AffixEmpoweringElite.damageBoostCoefficient = damageMult;
       AffixEmpoweringBuff.eliteDef = AffixEmpoweringElite;
+      (AffixEmpoweringElite as ScriptableObject).name = "EliteEmpowering";
     }
 
     private void AddLanguageTokens()

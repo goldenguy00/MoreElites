@@ -27,6 +27,7 @@ namespace MoreElites
     private static Material overlayMat = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/voidoutro/matVoidRaidCrabEyeOverlay1BLUE.mat").WaitForCompletion();
     private static Texture2D eliteRamp = Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampShadowClone.png").WaitForCompletion();
     private static Sprite eliteIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
+    private static Sprite aspectIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
     // RoR2/Base/Common/ColorRamps/texRampWarbanner.png RoR2/DLC1/Common/ColorRamps/texRampVoidArenaShield.png RoR2/Base/artifactworld/matArtifactShellOverlay.mat
 
     public Echo()
@@ -136,6 +137,7 @@ namespace MoreElites
       AffixEchoBuff.isDebuff = false;
       AffixEchoBuff.buffColor = AffixEchoColor;
       AffixEchoBuff.iconSprite = eliteIcon;
+      (AffixEchoBuff as UnityEngine.Object).name = AffixEchoBuff.name;
     }
 
     private void SetupEquipment()
@@ -152,11 +154,16 @@ namespace MoreElites
       AffixEchoEquipment.passiveBuffDef = AffixEchoBuff;
       AffixEchoEquipment.dropOnDeathChance = affixDropChance * 0.01f;
       AffixEchoEquipment.enigmaCompatible = false;
+      AffixEchoEquipment.pickupIconSprite = aspectIcon;
       AffixEchoEquipment.pickupModelPrefab = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion(), "PickupAffixEcho", false);
       foreach (Renderer componentsInChild in AffixEchoEquipment.pickupModelPrefab.GetComponentsInChildren<Renderer>())
         componentsInChild.material = echoMat;
       AffixEchoEquipment.nameToken = "EQUIPMENT_AFFIX_Echo_NAME";
       AffixEchoEquipment.name = "AffixEcho";
+
+      AffixEchoEquipment.pickupToken = "Aspect of Echo";
+      AffixEchoEquipment.descriptionToken = "Summon 2 copies of yourself";
+      AffixEchoEquipment.loreToken = "";
     }
 
     private void SetupElite()
@@ -169,6 +176,7 @@ namespace MoreElites
       AffixEchoElite.healthBoostCoefficient = healthMult;
       AffixEchoElite.damageBoostCoefficient = damageMult;
       AffixEchoBuff.eliteDef = AffixEchoElite;
+      (AffixEchoElite as ScriptableObject).name = "EliteEcho";
     }
 
     private void AddLanguageTokens()
@@ -185,7 +193,13 @@ namespace MoreElites
 
       private void FixedUpdate() => this.spawnCard.nodeGraphType = this.body.isFlying ? MapNodeGroup.GraphType.Air : MapNodeGroup.GraphType.Ground;
 
-      private void Awake() => this.enabled = false;
+      private void Awake()
+      {
+        this.enabled = false;
+        // Play_voidRaid_breakLeg Play_voidRaid_fall_pt2  
+        // Play_affix_void_spawn
+        Util.PlaySound("Play_voidRaid_fog_explode", this.gameObject);
+      }
 
       private void OnEnable()
       {
@@ -272,10 +286,10 @@ namespace MoreElites
 
       private void FixedUpdate()
       {
-        this.fireTimer -= Time.fixedDeltaTime;
-        if ((double)this.fireTimer > 0.0)
+        this.fireTimer += Time.fixedDeltaTime;
+        if ((double)this.fireTimer < this.fireInterval)
           return;
-        this.fireTimer = this.fireInterval;
+        this.fireTimer %= 1;
         if (this.body.healthComponent && !this.body.healthComponent.alive)
           return;
         ProjectileManager.instance.FireProjectile(new FireProjectileInfo()

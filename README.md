@@ -28,6 +28,14 @@ There's a config for disabling specific elites and the Tier 2 HP/Damage Multipli
 
 ## Changelog
 
+**0.9.0**
+
+- Fixes incompats (hopefully)
+- Frenzied aspect now blinks on use instead of automatically
+- Changes Frenzied blink effect
+- Reduces Frenzied minimum distant to TP to player
+- Adds sound to Echo spawn
+
 **0.8.5**
 
 - Adds a drop chance to the aspects

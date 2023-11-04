@@ -6,7 +6,7 @@ using R2API;
 
 namespace MoreElites
 {
-  [BepInPlugin("com.Nuxlar.MoreElites", "MoreElites", "0.8.3")]
+  [BepInPlugin("com.Nuxlar.MoreElites", "MoreElites", "0.9.0")]
   [BepInDependency(ItemAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency(LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency(EliteAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
