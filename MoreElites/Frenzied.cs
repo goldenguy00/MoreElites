@@ -20,8 +20,6 @@ namespace MoreElites
     public static float healthMult = 4f;
     public static float damageMult = 2f;
     public static float affixDropChance = 0.00025f;
-    private static GameObject FrenziedWard = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/AffixHauntedWard.prefab").WaitForCompletion(), "FrenziedWard");
-    private static GameObject celestineHalo = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ElitePoison/DisplayEliteUrchinCrown.prefab").WaitForCompletion(), "FrenziedCrown");
     private static Material warbannerMat = Addressables.LoadAssetAsync<Material>("RoR2/Base/WardOnLevel/matWarbannerSphereIndicator.mat").WaitForCompletion();
     private static GameObject blinkEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Treebot/SonicBoomEffect.prefab").WaitForCompletion();
     private static GameObject blinkEffect2 = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/VoidSuppressor/SuppressorRetreatToShellEffect.prefab").WaitForCompletion();
@@ -33,8 +31,6 @@ namespace MoreElites
 
     public Frenzied()
     {
-      celestineHalo.AddComponent<NetworkIdentity>();
-      FrenziedWard.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = FrenziedMat;
       this.AddLanguageTokens();
       this.SetupBuff();
       this.SetupEquipment();
@@ -127,10 +123,9 @@ namespace MoreElites
 
     private void AddContent()
     {
-      ItemDisplays itemDisplays = new ItemDisplays();
       ContentAddition.AddEliteDef(AffixFrenziedElite);
       ContentAddition.AddBuffDef(AffixFrenziedBuff);
-      ItemAPI.Add(new CustomEquipment(AffixFrenziedEquipment, itemDisplays.CreateItemDisplayRules(celestineHalo, warbannerMat)));
+      ContentAddition.AddEquipmentDef(AffixFrenziedEquipment);
     }
 
     private void SetupBuff()
@@ -196,7 +191,7 @@ namespace MoreElites
     {
       private float fireTimer;
       private float fireInterval = 10f;
-      private GameObject blinkPrefab = blinkEffect2;
+      private GameObject blinkPrefab = blinkEffect;
       private CharacterBody body;
       private Vector3 blinkDestination = Vector3.zero;
       private Vector3 blinkStart = Vector3.zero;

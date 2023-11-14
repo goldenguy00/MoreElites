@@ -21,7 +21,6 @@ namespace MoreElites
     private static Texture2D eliteRamp = Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampMagmaWorm.png").WaitForCompletion();
     private static Sprite eliteIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
     private static Sprite aspectIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
-    // RoR2/Base/Common/ColorRamps/texRampWarbanner.png 
 
     public Empowering()
     {
@@ -32,7 +31,6 @@ namespace MoreElites
       this.SetupElite();
       this.AddContent();
       EliteRamp.AddRamp(AffixEmpoweringElite, eliteRamp);
-      ContentAddition.AddEquipmentDef(AffixEmpoweringEquipment);
       On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
       On.RoR2.CharacterBody.OnBuffFinalStackLost += CharacterBody_OnBuffFinalStackLost;
       On.RoR2.CombatDirector.Init += CombatDirector_Init;
@@ -77,6 +75,9 @@ namespace MoreElites
         component.buffDef = RoR2Content.Buffs.Warbanner;
         component.Networkradius = 25f + self.radius;
         gameObject.GetComponent<NetworkedBodyAttachment>().AttachToGameObjectAndSpawn(self.gameObject);
+        GameObject.Destroy(gameObject.GetComponent<AkEvent>());
+        GameObject.Destroy(gameObject.GetComponent<AkEvent>());
+        GameObject.Destroy(gameObject.GetComponent<AkGameObj>());
       }
     }
 
@@ -94,9 +95,9 @@ namespace MoreElites
 
     private void AddContent()
     {
-      ItemDisplays itemDisplays = new ItemDisplays();
       ContentAddition.AddEliteDef(AffixEmpoweringElite);
       ContentAddition.AddBuffDef(AffixEmpoweringBuff);
+      ContentAddition.AddEquipmentDef(AffixEmpoweringEquipment);
     }
 
     private void SetupBuff()

@@ -6,7 +6,7 @@ using R2API;
 
 namespace MoreElites
 {
-  [BepInPlugin("com.Nuxlar.MoreElites", "MoreElites", "0.9.0")]
+  [BepInPlugin("com.Nuxlar.MoreElites", "MoreElites", "0.9.5")]
   [BepInDependency(ItemAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency(LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
   [BepInDependency(EliteAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
@@ -17,6 +17,7 @@ namespace MoreElites
   public class MoreElites : BaseUnityPlugin
   {
     public static ConfigEntry<bool> enableEcho;
+    public static ConfigEntry<bool> enableVolatile;
     public static ConfigEntry<bool> enableEmpowering;
     public static ConfigEntry<bool> enableFrenzied;
     public static ConfigEntry<float> t2HealthMult;
@@ -27,6 +28,7 @@ namespace MoreElites
     {
       MEConfig = new ConfigFile(Paths.ConfigPath + "\\com.Nuxlar.MoreElites.cfg", true);
       enableEcho = MEConfig.Bind<bool>("General", "Enable Echo", true, "Should enable the Echo Elite (Shadow Clone Elite)");
+      enableVolatile = MEConfig.Bind<bool>("General", "Enable Volatile", true, "Should enable the Volatile Elite (RoR1 Missile Elite)");
       enableEmpowering = MEConfig.Bind<bool>("General", "Enable Empowering", true, "Should enable the Empowering Elite (Warbanner Elite)");
       enableFrenzied = MEConfig.Bind<bool>("General", "Enable Frenzied", true, "Should enable the Frenzied Elite (RoR1 Elite)");
       t2HealthMult = MEConfig.Bind<float>("General", "T2 Health Multiplier", 18f, "Vanilla T2 is 18. A good alt is 12. Does not affect vanilla T2s.");
@@ -39,6 +41,8 @@ namespace MoreElites
         new Empowering();
       if (enableFrenzied.Value)
         new Frenzied();
+      if (enableVolatile.Value)
+        new Volatile();
     }
 
     private void WipeConfig(ConfigFile configFile)

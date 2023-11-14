@@ -6,6 +6,11 @@ There's a config for disabling specific elites and the Tier 2 HP/Damage Multipli
 
 ## Tier 1
 
+### Volatile (RoR1)
+
+- All attacks explode
+- Fires a missile in random intervals between 1 and 5 seconds (inclusive)
+
 ### Frenzied (RoR1)
 
 - +2 base move speed
@@ -24,9 +29,17 @@ There's a config for disabling specific elites and the Tier 2 HP/Damage Multipli
 - Clones die if main body is killed
 - Clones fire hunter projectiles
 
+### Duelist (Next Update)
+
 ![3 elite beetles](https://i.ibb.co/4NJqjwk/moreelites.png)
 
 ## Changelog
+
+**0.9.5**
+
+- Adds Volatile Elite
+- Changes Frenzied blink effect back
+- Removes sound from Empowering warbanner area
 
 **0.9.0**
 
