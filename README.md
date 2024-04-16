@@ -40,6 +40,7 @@ There's a config for disabling specific elites and the Tier 2 HP/Damage Multipli
 - Volatile elites' missiles have more turbulence (2 -> 6)
 - Volatile elites' "behemoth" explosion damage reduced (25% damage instead of 60%)
 - Reduces Echo elites' hunter projectile damage (300% -> 100%)
+- Updated dependencies
 
 **0.9.5**
 
