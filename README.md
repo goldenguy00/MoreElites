@@ -2,7 +2,7 @@
 
 **SUBMIT ANY ISSUES USING THE LINK ABOVE**
 
-There's a config for disabling specific elites and the Tier 2 HP/Damage Multipliers. Will fix crown displays at some point, some may be wonky.
+There's a config for disabling specific elites and the Tier 2 HP/Damage Multipliers. Some crown displays might be wonky.
 
 ## Tier 1
 
@@ -29,11 +29,17 @@ There's a config for disabling specific elites and the Tier 2 HP/Damage Multipli
 - Clones die if main body is killed
 - Clones fire hunter projectiles
 
-### Duelist (Next Update)
-
 ![3 elite beetles](https://i.ibb.co/4NJqjwk/moreelites.png)
 
 ## Changelog
+
+**1.0.0**
+
+- Fixes wake of vultures or getting the volatile aspect giving behemoths
+- Volatile elites' missiles do less damage (50% damage instead of 100%)
+- Volatile elites' missiles have more turbulence (2 -> 6)
+- Volatile elites' "behemoth" explosion damage reduced (25% damage instead of 60%)
+- Reduces Echo elites' hunter projectile damage (300% -> 100%)
 
 **0.9.5**
 

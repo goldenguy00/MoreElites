@@ -18,7 +18,7 @@ namespace MoreElites
         public static BuffDef AffixVolatileBuff;
         public static EliteDef AffixVolatileElite;
         public static float healthMult = 4f;
-        public static float damageMult = 1.4f;
+        public static float damageMult = 2f;
         public static float affixDropChance = 0.00025f;
         private static GameObject VolatileProjectile = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/MissileProjectile.prefab").WaitForCompletion(), "AffixVolatileNuxProjectile");
         private static GameObject VolatileProjectileGhost = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/MissileGhost.prefab").WaitForCompletion(), "AffixVolatileNuxProjectileGhost");
@@ -28,6 +28,7 @@ namespace MoreElites
         private static Texture2D eliteRamp = Addressables.LoadAssetAsync<Texture2D>("RoR2/DLC1/Common/ColorRamps/texRampStrongerBurn.png").WaitForCompletion();
         private static Sprite eliteIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
         private static Sprite aspectIcon = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
+        private static GameObject behemoExplosion = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/VFX/OmniExplosionVFXQuick.prefab").WaitForCompletion();
 
         public Volatile()
         {
@@ -41,6 +42,7 @@ namespace MoreElites
             missileController.acceleration = 2;
             missileController.deathTimer = 10;
             missileController.maxVelocity = 20;
+            missileController.turbulence = 6f;
             ContentAddition.AddProjectile(VolatileProjectile);
 
             this.AddLanguageTokens();
@@ -49,9 +51,55 @@ namespace MoreElites
             this.SetupElite();
             this.AddContent();
             EliteRamp.AddRamp(AffixVolatileElite, eliteRamp);
+
+            On.RoR2.GlobalEventManager.OnHitAll += AddBehemoExplosion;
             On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
             On.RoR2.CharacterBody.OnBuffFinalStackLost += CharacterBody_OnBuffFinalStackLost;
             On.RoR2.CombatDirector.Init += CombatDirector_Init;
+        }
+
+        private void AddBehemoExplosion(On.RoR2.GlobalEventManager.orig_OnHitAll orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
+        {
+            orig(self, damageInfo, hitObject);
+            if (damageInfo.procCoefficient == 0.0 || damageInfo.rejected)
+                return;
+            if (!(bool)damageInfo.attacker)
+                return;
+            CharacterBody body = damageInfo.attacker.GetComponent<CharacterBody>();
+            if (!(bool)body)
+                return;
+            if (body.HasBuff(AffixVolatileBuff))
+            {
+                float num2 = 4 * damageInfo.procCoefficient;
+                float damageCoefficient = 0.25f;
+                float num3 = Util.OnHitProcDamage(damageInfo.damage, body.damage, damageCoefficient);
+
+                EffectManager.SpawnEffect(behemoExplosion, new EffectData()
+                {
+                    origin = damageInfo.position,
+                    scale = num2,
+                    rotation = Util.QuaternionSafeLookRotation(damageInfo.force)
+                }, true);
+
+                BlastAttack blastAttack = new BlastAttack()
+                {
+                    position = damageInfo.position,
+                    baseDamage = num3,
+                    baseForce = 0.0f,
+                    radius = num2,
+                    attacker = damageInfo.attacker,
+                    inflictor = null
+                };
+
+                blastAttack.teamIndex = TeamComponent.GetObjectTeam(blastAttack.attacker);
+                blastAttack.crit = damageInfo.crit;
+                blastAttack.procChainMask = damageInfo.procChainMask;
+                blastAttack.procCoefficient = 0.0f;
+                blastAttack.damageColorIndex = DamageColorIndex.Item;
+                blastAttack.falloffModel = BlastAttack.FalloffModel.None;
+                blastAttack.damageType = damageInfo.damageType;
+                blastAttack.Fire();
+            }
         }
 
         private void CombatDirector_Init(On.RoR2.CombatDirector.orig_Init orig)
@@ -63,7 +111,7 @@ namespace MoreElites
                 CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[2];
                 List<EliteDef> elites = targetTier.eliteTypes.ToList();
                 AffixVolatileElite.healthBoostCoefficient = 2.5f;
-                AffixVolatileElite.damageBoostCoefficient = 0.9f;
+                AffixVolatileElite.damageBoostCoefficient = 1.5f;
                 elites.Add(AffixVolatileElite);
                 targetTier.eliteTypes = elites.ToArray();
             }
@@ -72,7 +120,7 @@ namespace MoreElites
                 CombatDirector.EliteTierDef targetTier = EliteAPI.VanillaEliteTiers[1];
                 List<EliteDef> elites = targetTier.eliteTypes.ToList();
                 AffixVolatileElite.healthBoostCoefficient = 4f;
-                AffixVolatileElite.damageBoostCoefficient = 1.4f;
+                AffixVolatileElite.damageBoostCoefficient = 2f;
                 elites.Add(AffixVolatileElite);
                 targetTier.eliteTypes = elites.ToArray();
             }
@@ -86,12 +134,8 @@ namespace MoreElites
           )
         {
             orig(self, buffDef);
-            if (buffDef == AffixVolatileBuff && (bool)self.inventory)
-            {
-                self.inventory.GiveItemString(RoR2Content.Items.Behemoth.name);
+            if (buffDef == AffixVolatileBuff)
                 self.gameObject.AddComponent<VolatileMissileController>();
-            }
-
         }
 
         private void CharacterBody_OnBuffFinalStackLost(
@@ -171,7 +215,7 @@ namespace MoreElites
         {
             private float fireTimer;
             private float fireInterval = 3f;
-            private float damageCoefficient = 0.4f;
+            private float damageCoefficient = 0.5f;
             private CharacterBody body;
 
             private void Awake()

@@ -276,7 +276,7 @@ namespace MoreElites
     {
       private float fireTimer;
       private float fireInterval = 3f;
-      private float damageCoefficient = 3f;
+      private float damageCoefficient = 1f;
       private CharacterBody body;
 
       private void Awake()
