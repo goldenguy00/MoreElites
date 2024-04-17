@@ -215,7 +215,10 @@ namespace MoreElites
         {
             private float fireTimer;
             private float fireInterval = 3f;
-            private float damageCoefficient = 0.5f;
+            private float normalBaseDamage = 12f;
+            private float normalLevelDamage = 2.4f;
+            private float championBaseDamage = 18f;
+            private float championLevelDamage = 3.6f;
             private CharacterBody body;
 
             private void Awake()
@@ -232,7 +235,14 @@ namespace MoreElites
                 RecalculateInterval();
                 if (this.body.healthComponent && !this.body.healthComponent.alive)
                     return;
-                MissileUtils.FireMissile(this.body.corePosition, this.body, new ProcChainMask(), (GameObject)null, this.body.damage * damageCoefficient, Util.CheckRoll(this.body.crit, this.body.master), VolatileProjectile, DamageColorIndex.Item, false);
+                float damage;
+                if (this.body.isChampion)
+                    damage = championBaseDamage + championLevelDamage * this.body.level;
+                else
+                    damage = normalBaseDamage + normalLevelDamage * this.body.level;
+                Debug.LogWarning(this.body.level);
+                Debug.LogWarning(damage);
+                MissileUtils.FireMissile(this.body.corePosition, this.body, new ProcChainMask(), (GameObject)null, damage, Util.CheckRoll(this.body.crit, this.body.master), VolatileProjectile, DamageColorIndex.Item, false);
             }
 
             private void RecalculateInterval()

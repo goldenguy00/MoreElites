@@ -10,6 +10,8 @@ There's a config for disabling specific elites and the Tier 2 HP/Damage Multipli
 
 - All attacks explode
 - Fires a missile in random intervals between 1 and 5 seconds (inclusive)
+- Missile damage uses fixed scaling instead of base damage
+- Fixed damage scaling values: 12 base +2.4/lvl for normal enemies and 18 base +3.6/lvl for boss class enemies
 
 ### Frenzied (RoR1)
 
@@ -28,10 +30,18 @@ There's a config for disabling specific elites and the Tier 2 HP/Damage Multipli
 - Spawns 2 clones of itself with 10% max HP
 - Clones die if main body is killed
 - Clones fire hunter projectiles
+- Hunter Projectiles damage uses fixed scaling instead of base damage
+- Fixed damage scaling values: 24 base +4.8/lvl for normal enemies and 32 base +7.2/lvl for boss class enemies
+  - **I don't loop lmk if these values are too high or too low**
 
 ![3 elite beetles](https://i.ibb.co/4NJqjwk/moreelites.png)
 
 ## Changelog
+
+**1.0.1**
+
+- Changes Volatile Elites' missiles to use fixed damage scaling (Thanks Moffein)
+- Changes Echo Elites' hunter projectiles to use fixed damage scaling
 
 **1.0.0**
 

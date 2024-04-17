@@ -276,7 +276,10 @@ namespace MoreElites
     {
       private float fireTimer;
       private float fireInterval = 3f;
-      private float damageCoefficient = 1f;
+      private float normalBaseDamage = 24f;
+      private float normalLevelDamage = 4.8f;
+      private float championBaseDamage = 32f;
+      private float championLevelDamage = 7.2f;
       private CharacterBody body;
 
       private void Awake()
@@ -292,10 +295,17 @@ namespace MoreElites
         this.fireTimer %= 1;
         if (this.body.healthComponent && !this.body.healthComponent.alive)
           return;
+
+        float damage;
+        if (this.body.isChampion)
+          damage = this.championBaseDamage + this.championLevelDamage * this.body.level;
+        else
+          damage = this.normalBaseDamage + this.normalLevelDamage * this.body.level;
+
         ProjectileManager.instance.FireProjectile(new FireProjectileInfo()
         {
           crit = false,
-          damage = this.body.damage * this.damageCoefficient,
+          damage = damage,
           damageColorIndex = DamageColorIndex.Default,
           damageTypeOverride = new DamageType?(DamageType.SlowOnHit),
           owner = this.body.gameObject,
