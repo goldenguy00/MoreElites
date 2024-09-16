@@ -6,14 +6,7 @@ using R2API;
 
 namespace MoreElites
 {
-  [BepInPlugin("com.Nuxlar.MoreElites", "MoreElites", "1.0.2")]
-  [BepInDependency(ItemAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-  [BepInDependency(LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-  [BepInDependency(EliteAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-  [BepInDependency(RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-  [BepInDependency(PrefabAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-  [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-
+  [BepInPlugin("com.Nuxlar.MoreElites", "MoreElites", "1.0.3")]
   public class MoreElites : BaseUnityPlugin
   {
     public static ConfigEntry<bool> enableEcho;

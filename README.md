@@ -38,6 +38,10 @@ There's a config for disabling specific elites and the Tier 2 HP/Damage Multipli
 
 ## Changelog
 
+**1.0.3**
+
+- Updated for SOTS
+
 **1.0.2**
 
 - Removes debug logs (whoops)
