@@ -3,13 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Metadata", "Metadata", "{3A26DDA8-2697-4D64-962B-DB9E2DC00EF6}"
-	ProjectSection(SolutionItems) = preProject
-		manifest.json = manifest.json
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoreElites", "MoreElites\MoreElites.csproj", "{C66FBA5E-E871-48FB-9B54-D5FA553C03A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DB3500D0-3386-4B23-B94E-AE0E268C5C4E}"
+	ProjectSection(SolutionItems) = preProject
+		Release\CHANGELOG.md = Release\CHANGELOG.md
+		Release\manifest.json = Release\manifest.json
+		Release\README.md = Release\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
