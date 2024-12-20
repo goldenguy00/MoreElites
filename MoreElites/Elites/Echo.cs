@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
+using System;
 
 namespace MoreElites.Elites
 {
@@ -20,7 +21,7 @@ namespace MoreElites.Elites
         public override string DescriptionText => "Summon 2 copies of yourself";
         public override string LoreText => "Shadow clone jutsu";
 
-        public override EliteTier EliteTierDef => EliteTier.T2;
+        public override EliteTier EliteTierDef => PluginConfig.eliteTierEcho.Value;
         public override Color EliteColor => Color.black;
         public override Texture2D EliteRamp => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampShadowClone.png").WaitForCompletion();
         public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();

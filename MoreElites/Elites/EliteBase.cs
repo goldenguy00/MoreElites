@@ -4,10 +4,8 @@ using System.Linq;
 using R2API;
 using RoR2;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using MoreElites.Elites;
 
-namespace MoreElites
+namespace MoreElites.Elites
 {
     public abstract class EliteBase<T> : EliteBase where T : EliteBase<T>
     {
@@ -44,7 +42,7 @@ namespace MoreElites
         public abstract string DescriptionText { get; }
         public abstract string PickupText { get; }
         public abstract string LoreText { get; }
-        
+
         public abstract EliteTier EliteTierDef { get; }
         public abstract Color EliteColor { get; }
         public abstract Texture2D EliteRamp { get; }
@@ -64,13 +62,13 @@ namespace MoreElites
 
         public static void CreateElites()
         {
-            if (MoreElites.enableEcho.Value)
+            if (PluginConfig.enableEcho.Value)
                 new Echo();
-            if (MoreElites.enableEmpowering.Value)
+            if (PluginConfig.enableEmpowering.Value)
                 new Empowering();
-            if (MoreElites.enableFrenzied.Value)
+            if (PluginConfig.enableFrenzied.Value)
                 new Frenzied();
-            if (MoreElites.enableVolatile.Value)
+            if (PluginConfig.enableVolatile.Value)
                 new Volatile();
 
             if (EliteInstances.Any())
@@ -160,7 +158,7 @@ namespace MoreElites
             eliteEquipmentDef.cooldown = 0.0f;
             eliteEquipmentDef.isLunar = false;
             eliteEquipmentDef.isBoss = false;
-            eliteEquipmentDef.dropOnDeathChance = EliteBase.affixDropChance;
+            eliteEquipmentDef.dropOnDeathChance = affixDropChance;
             eliteEquipmentDef.enigmaCompatible = false;
 
             eliteEquipmentDef.passiveBuffDef = this.EliteBuffDef;
@@ -175,7 +173,7 @@ namespace MoreElites
             eliteEquipmentDef.descriptionToken = $"EQUIPMENT_AFFIX_{this.Name}_DESC";
             eliteEquipmentDef.pickupToken = $"EQUIPMENT_AFFIX_{this.Name}_PICKUP_DESC";
             eliteEquipmentDef.loreToken = $"EQUIPMENT_AFFIX_{this.Name}_LORE";
-            
+
             ContentAddition.AddEquipmentDef(eliteEquipmentDef);
             return eliteEquipmentDef;
         }
@@ -194,19 +192,19 @@ namespace MoreElites
                 {
                     var customHonorElite = new CustomElite($"Elite{this.Name}Honor", this.EliteEquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.Name}", tierDefs, this.EliteRamp);
 
-                    customHonorElite.EliteDef.healthBoostCoefficient = MoreElites.t1HonorHealthMult.Value;
-                    customHonorElite.EliteDef.damageBoostCoefficient = MoreElites.t1HonorDamageMult.Value;
+                    customHonorElite.EliteDef.healthBoostCoefficient = PluginConfig.t1HonorHealthMult.Value;
+                    customHonorElite.EliteDef.damageBoostCoefficient = PluginConfig.t1HonorDamageMult.Value;
 
                     EliteAPI.Add(customHonorElite);
                 }
 
-                customElite.EliteDef.healthBoostCoefficient = MoreElites.t1HealthMult.Value;
-                customElite.EliteDef.damageBoostCoefficient = MoreElites.t1DamageMult.Value;
+                customElite.EliteDef.healthBoostCoefficient = PluginConfig.t1HealthMult.Value;
+                customElite.EliteDef.damageBoostCoefficient = PluginConfig.t1DamageMult.Value;
             }
             else
             {
-                customElite.EliteDef.healthBoostCoefficient = MoreElites.t2HealthMult.Value;
-                customElite.EliteDef.damageBoostCoefficient = MoreElites.t2DamageMult.Value;
+                customElite.EliteDef.healthBoostCoefficient = PluginConfig.t2HealthMult.Value;
+                customElite.EliteDef.damageBoostCoefficient = PluginConfig.t2DamageMult.Value;
             }
 
             EliteAPI.Add(customElite);
