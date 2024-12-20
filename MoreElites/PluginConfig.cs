@@ -8,24 +8,31 @@ using BepInEx;
 using BepInEx.Configuration;
 using MoreElites.Elites;
 using UnityEngine;
+using static MoreElites.PluginConfig;
 
 namespace MoreElites
 {
     public static class PluginConfig
     {
+        public enum ConfigTier
+        {
+            T1 = 1,
+            AboveStage3 = 3,
+            T2 = 5
+        }
         internal static ConfigFile MEConfig;
 
         public static ConfigEntry<bool> enableEcho;
-        public static ConfigEntry<EliteBase.EliteTier> eliteTierEcho;
+        public static ConfigEntry<ConfigTier> eliteTierEcho;
 
         public static ConfigEntry<bool> enableVolatile;
-        public static ConfigEntry<EliteBase.EliteTier> eliteTierVolatile;
+        public static ConfigEntry<ConfigTier> eliteTierVolatile;
 
         public static ConfigEntry<bool> enableEmpowering;
-        public static ConfigEntry<EliteBase.EliteTier> eliteTierEmpowering;
+        public static ConfigEntry<ConfigTier> eliteTierEmpowering;
 
         public static ConfigEntry<bool> enableFrenzied;
-        public static ConfigEntry<EliteBase.EliteTier> eliteTierFrenzied;
+        public static ConfigEntry<ConfigTier> eliteTierFrenzied;
 
         public static ConfigEntry<float> t1HealthMult;
         public static ConfigEntry<float> t1DamageMult;
@@ -54,7 +61,7 @@ namespace MoreElites
             eliteTierEcho = MEConfig.BindOption(
                 "General",
                 "Elite Tier Echo",
-                EliteBase.EliteTier.T2,
+                ConfigTier.T2,
                 "Sets the Elite Tier for the Echo Elite (Shadow Clone Elite). A good alt is T1Upgrade (Stage 3 and later)");
 
             // volatile
@@ -66,7 +73,7 @@ namespace MoreElites
             eliteTierVolatile = MEConfig.BindOption(
                 "General",
                 "Elite Tier Volatile",
-                EliteBase.EliteTier.T1,
+                ConfigTier.T1,
                 "Sets the Elite Tier for the Volatile Elite (RoR1 Missile Elite). A good alt is T1Upgrade (Stage 3 and later)");
 
             // empowering
@@ -75,10 +82,10 @@ namespace MoreElites
                 "Enable Empowering",
                 true,
                 "Should enable the Empowering Elite (Warbanner Elite)");
-            eliteTierVolatile = MEConfig.BindOption(
+            eliteTierEmpowering = MEConfig.BindOption(
                 "General",
                 "Elite Tier Empowering",
-                EliteBase.EliteTier.T1,
+                ConfigTier.T1,
                 "Sets the Elite Tier for the Empowering Elite (Warbanner Elite)");
 
             // frenzied
@@ -87,10 +94,10 @@ namespace MoreElites
                 "Enable Frenzied",
                 true,
                 "Should enable the Frenzied Elite (RoR1 Elite)");
-            eliteTierVolatile = MEConfig.BindOption(
+            eliteTierFrenzied = MEConfig.BindOption(
                 "General",
                 "Elite Tier Frenzied",
-                EliteBase.EliteTier.T1,
+                ConfigTier.T1,
                 "Sets the Elite Tier for the Frenzied Elite (RoR1 Elite)");
 
 
@@ -136,23 +143,8 @@ namespace MoreElites
                 "Vanilla T2 is 6. A good alt is 3.5. Does not affect vanilla T2s.",
                 1f, 10f);
 
-            FixEnums(eliteTierEcho);
-            FixEnums(eliteTierFrenzied);
-            FixEnums(eliteTierEmpowering);
-            FixEnums(eliteTierVolatile);
-
             WipeConfig();
         }
-
-        private static void FixEnums(ConfigEntry<EliteBase.EliteTier> tier)
-        {
-            if (tier.Value is EliteBase.EliteTier.Invalid or EliteBase.EliteTier.T1Honor)
-                tier.Value = EliteBase.EliteTier.T1;
-
-            if (tier.Value is EliteBase.EliteTier.T1UpgradeHonor)
-                tier.Value = EliteBase.EliteTier.T1Upgrade;
-        }
-
 
         private static void WipeConfig()
         {

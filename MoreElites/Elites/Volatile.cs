@@ -18,7 +18,7 @@ namespace MoreElites.Elites
         public override string DescriptionText => "All attacks explode and periodically fire missiles.";
         public override string LoreText => "Hope you like dodging";
 
-        public override EliteTier EliteTierDef => EliteTier.T1Upgrade;
+        public override EliteTier EliteTierDef => (EliteTier)PluginConfig.eliteTierVolatile.Value;
         public override Color EliteColor => Color.black;
         public override Texture2D EliteRamp => Addressables.LoadAssetAsync<Texture2D>("RoR2/DLC1/Common/ColorRamps/texRampStrongerBurn.png").WaitForCompletion();
         public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
