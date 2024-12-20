@@ -44,11 +44,11 @@ namespace MoreElites
             enableFrenzied = MEConfig.Bind<bool>("General", "Enable Frenzied", true, "Should enable the Frenzied Elite (RoR1 Elite)");
             upgradeFrenzied = MEConfig.Bind<bool>("General", "Upgrade Frenzied", false, "Should the Frenzied Elite (RoR1 Elite) only appear on stage 3 and later");
 
-            t1HealthMult = MEConfig.Bind<float>("General", "T1 Health Multiplier", 18f, "Vanilla T1 is 18. A good alt is 12. Does not affect vanilla T1s.");
-            t1DamageMult = MEConfig.Bind<float>("General", "T1 Damage Multiplier", 6f, "Vanilla T1 is 6. A good alt is 3.5. Does not affect vanilla T1s.");
+            t1HealthMult = MEConfig.Bind<float>("General", "T1 Health Multiplier", 4f, "Vanilla T1 is 4. A good alt is 3. Does not affect vanilla T1s.");
+            t1DamageMult = MEConfig.Bind<float>("General", "T1 Damage Multiplier", 2f, "Vanilla T1 is 2. A good alt is 1.5. Does not affect vanilla T1s.");
 
-            t1HonorHealthMult = MEConfig.Bind<float>("General", "T1 Health Multiplier", 18f, "Vanilla T1 is 18. A good alt is 12. Does not affect vanilla T1s.");
-            t1HonorDamageMult = MEConfig.Bind<float>("General", "T1 Damage Multiplier", 6f, "Vanilla T1 is 6. A good alt is 3.5. Does not affect vanilla T1s.");
+            t1HonorHealthMult = MEConfig.Bind<float>("General", "T1 Honor Health Multiplier", 2.5f, "Vanilla T1 is 2.5. Does not affect vanilla T1s.");
+            t1HonorDamageMult = MEConfig.Bind<float>("General", "T1 Honor Damage Multiplier", 1.5f, "Vanilla T1 is 1.5. Does not affect vanilla T1s.");
 
             t2HealthMult = MEConfig.Bind<float>("General", "T2 Health Multiplier", 18f, "Vanilla T2 is 18. A good alt is 12. Does not affect vanilla T2s.");
             t2DamageMult = MEConfig.Bind<float>("General", "T2 Damage Multiplier", 6f, "Vanilla T2 is 6. A good alt is 3.5. Does not affect vanilla T2s.");

@@ -46,6 +46,7 @@ namespace MoreElites
         public abstract Texture2D EliteRamp { get; }
         public abstract Sprite EliteIcon { get; }
         public abstract Sprite AspectIcon { get; }
+
         public abstract Material EliteMaterial { get; set; }
         public abstract GameObject PickupModelPrefab { get; set; }
 
@@ -68,8 +69,11 @@ namespace MoreElites
             if (MoreElites.enableVolatile.Value)
                 new Volatile();
 
-            On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
-            On.RoR2.CharacterBody.OnBuffFinalStackLost += CharacterBody_OnBuffFinalStackLost;
+            if (EliteInstances.Any())
+            {
+                On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
+                On.RoR2.CharacterBody.OnBuffFinalStackLost += CharacterBody_OnBuffFinalStackLost;
+            }
         }
 
         private static void CharacterBody_OnBuffFirstStackGained(On.RoR2.CharacterBody.orig_OnBuffFirstStackGained orig, CharacterBody self, BuffDef buffDef)
@@ -144,43 +148,40 @@ namespace MoreElites
 
         public virtual EquipmentDef SetupEquipment()
         {
-            var affixEchoEquipment = ScriptableObject.CreateInstance<EquipmentDef>();
-            affixEchoEquipment.appearsInMultiPlayer = true;
-            affixEchoEquipment.appearsInSinglePlayer = true;
-            affixEchoEquipment.canBeRandomlyTriggered = false;
-            affixEchoEquipment.canDrop = false;
-            affixEchoEquipment.colorIndex = ColorCatalog.ColorIndex.Equipment;
-            affixEchoEquipment.cooldown = 0.0f;
-            affixEchoEquipment.isLunar = false;
-            affixEchoEquipment.isBoss = false;
-            affixEchoEquipment.dropOnDeathChance = EliteBase.affixDropChance;
-            affixEchoEquipment.enigmaCompatible = false;
+            var eliteEquipmentDef = ScriptableObject.CreateInstance<EquipmentDef>();
+            eliteEquipmentDef.appearsInMultiPlayer = true;
+            eliteEquipmentDef.appearsInSinglePlayer = true;
+            eliteEquipmentDef.canBeRandomlyTriggered = false;
+            eliteEquipmentDef.canDrop = false;
+            eliteEquipmentDef.colorIndex = ColorCatalog.ColorIndex.Equipment;
+            eliteEquipmentDef.cooldown = 0.0f;
+            eliteEquipmentDef.isLunar = false;
+            eliteEquipmentDef.isBoss = false;
+            eliteEquipmentDef.dropOnDeathChance = EliteBase.affixDropChance;
+            eliteEquipmentDef.enigmaCompatible = false;
 
-            affixEchoEquipment.passiveBuffDef = this.EliteBuffDef;
-            affixEchoEquipment.pickupIconSprite = this.AspectIcon;
-            affixEchoEquipment.pickupModelPrefab = this.PickupModelPrefab;
+            eliteEquipmentDef.passiveBuffDef = this.EliteBuffDef;
+            eliteEquipmentDef.pickupIconSprite = this.AspectIcon;
+            eliteEquipmentDef.pickupModelPrefab = this.PickupModelPrefab;
 
-            foreach (var componentsInChild in affixEchoEquipment.pickupModelPrefab.GetComponentsInChildren<Renderer>())
+            foreach (var componentsInChild in eliteEquipmentDef.pickupModelPrefab.GetComponentsInChildren<Renderer>())
                 componentsInChild.material = this.EliteMaterial;
 
-            affixEchoEquipment.name = $"Affix{this.Name}";
-            affixEchoEquipment.nameToken = $"EQUIPMENT_AFFIX_{this.Name}_NAME";
-            affixEchoEquipment.descriptionToken = $"EQUIPMENT_AFFIX_{this.Name}_DESC";
-            affixEchoEquipment.pickupToken = $"EQUIPMENT_AFFIX_{this.Name}_PICKUP_DESC";
-            affixEchoEquipment.loreToken = $"EQUIPMENT_AFFIX_{this.Name}_LORE";
-
-            return affixEchoEquipment;
+            eliteEquipmentDef.name = $"Affix{this.Name}";
+            eliteEquipmentDef.nameToken = $"EQUIPMENT_AFFIX_{this.Name}_NAME";
+            eliteEquipmentDef.descriptionToken = $"EQUIPMENT_AFFIX_{this.Name}_DESC";
+            eliteEquipmentDef.pickupToken = $"EQUIPMENT_AFFIX_{this.Name}_PICKUP_DESC";
+            eliteEquipmentDef.loreToken = $"EQUIPMENT_AFFIX_{this.Name}_LORE";
+            
+            ContentAddition.AddEquipmentDef(eliteEquipmentDef);
+            return eliteEquipmentDef;
         }
 
         public virtual CustomElite SetupElite(bool honor = false)
         {
             if (this.EliteTierDefs == EliteTier.T2 && honor)
-            {
-                Log.Error("T2 honor elites are not natively supported! You need to override this method!");
-                Log.Error(new System.Diagnostics.StackTrace());
-
                 return null;
-            }
+
             var customElite = new CustomElite($"Elite{this.Name}", this.EliteEquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.Name}", null, this.EliteRamp);
 
             switch(this.EliteTierDefs)

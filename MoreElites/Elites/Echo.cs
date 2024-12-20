@@ -43,8 +43,6 @@ namespace MoreElites.Elites
             RecalculateStatsAPI.GetStatCoefficients += ReduceSummonHP;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
             On.RoR2.CharacterModel.UpdateOverlays += CharacterModel_UpdateOverlays;
-
-            Log.Warning($"Done creating elite {this.Name}");
         }
 
         public override void OnBuffGained(CharacterBody self) => self.AddItemBehavior<CustomAffixEchoBehavior>(1);
@@ -212,7 +210,7 @@ namespace MoreElites.Elites
                         owner = this.body.gameObject,
                         position = this.body.aimOrigin,
                         rotation = Quaternion.LookRotation(Vector3.up),
-                        procChainMask = new ProcChainMask(),
+                        procChainMask = default,
                         projectilePrefab = echoProjectile,
                         force = 400f,
                         target = null
