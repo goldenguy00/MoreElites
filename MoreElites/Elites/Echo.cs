@@ -70,13 +70,18 @@ namespace MoreElites.Elites
         {
             orig(self);
 
-            if (self.activeOverlayCount < CharacterModel.maxOverlays && self.body && self.body.inventory)
+            if (self.body && self.body.inventory)
             {
-                if (self.body.HasBuff(EliteBuffDef))
-                    self.currentOverlays[++self.activeOverlayCount] = overlayMat;
+                AddOverlay(overlayMat, self.body.HasBuff(EliteBuffDef));
+                AddOverlay(EliteMaterial, self.body.inventory.GetItemCount(summonedEchoItem) > 0);
+            }
 
-                if (self.body.inventory.GetItemCount(summonedEchoItem) > 0)
-                    self.currentOverlays[++self.activeOverlayCount] = EliteMaterial;
+            void AddOverlay(Material overlayMaterial, bool condition)
+            {
+                if (self.activeOverlayCount < CharacterModel.maxOverlays && condition)
+                {
+                    self.currentOverlays[self.activeOverlayCount++] = overlayMaterial;
+                }
             }
         }
 
