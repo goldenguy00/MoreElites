@@ -20,7 +20,7 @@ namespace MoreElites.Elites
         public override string DescriptionText => "Summon 2 copies of yourself";
         public override string LoreText => "Shadow clone jutsu";
 
-        public override EliteTier EliteTierDefs => EliteTier.T2;
+        public override EliteTier EliteTierDef => EliteTier.T2;
         public override Color EliteColor => Color.black;
         public override Texture2D EliteRamp => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampShadowClone.png").WaitForCompletion();
         public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
@@ -200,11 +200,11 @@ namespace MoreElites.Elites
                 this.fireTimer += Time.fixedDeltaTime;
                 if (this.fireTimer >= fireInterval)
                 {
-                    this.fireTimer %= 1;
+                    this.fireTimer = 0;
 
                     var damage = this.body.isChampion
-                        ? championBaseDamage + championLevelDamage * this.body.level
-                        : normalBaseDamage + normalLevelDamage * this.body.level;
+                        ? championBaseDamage + (championLevelDamage * this.body.level)
+                        : normalBaseDamage + (normalLevelDamage * this.body.level);
 
                     ProjectileManager.instance.FireProjectile(new FireProjectileInfo()
                     {
@@ -212,7 +212,7 @@ namespace MoreElites.Elites
                         damage = damage,
                         damageColorIndex = DamageColorIndex.Default,
                         damageTypeOverride = DamageType.SlowOnHit,
-                        owner = this.body.gameObject,
+                        owner = this.gameObject,
                         position = this.body.aimOrigin,
                         rotation = Quaternion.LookRotation(Vector3.up),
                         procChainMask = default,

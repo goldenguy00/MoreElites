@@ -27,9 +27,13 @@ namespace MoreElites
     {
         public enum EliteTier
         {
+            Invalid,
             T1,
+            T1Honor,
             T1Upgrade,
+            T1UpgradeHonor,
             T2,
+            Lunar
         }
 
         public static float affixDropChance = 0.00025f;
@@ -41,7 +45,7 @@ namespace MoreElites
         public abstract string PickupText { get; }
         public abstract string LoreText { get; }
         
-        public abstract EliteTier EliteTierDefs { get; }
+        public abstract EliteTier EliteTierDef { get; }
         public abstract Color EliteColor { get; }
         public abstract Texture2D EliteRamp { get; }
         public abstract Sprite EliteIcon { get; }
@@ -113,7 +117,6 @@ namespace MoreElites
             this.EliteBuffDef = this.SetupBuff();
             this.EliteEquipmentDef = this.SetupEquipment();
             this.CustomEliteDef = this.SetupElite();
-            this.CustomEliteDefHonor = this.SetupElite(true);
 
             this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
 
@@ -177,38 +180,33 @@ namespace MoreElites
             return eliteEquipmentDef;
         }
 
-        public virtual CustomElite SetupElite(bool honor = false)
+        public virtual CustomElite SetupElite()
         {
-            if (this.EliteTierDefs == EliteTier.T2 && honor)
+            var tierDefs = this.GetVanillaEliteTierDef(this.EliteTierDef);
+            if (tierDefs is null)
                 return null;
 
-            var customElite = new CustomElite($"Elite{this.Name}", this.EliteEquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.Name}", null, this.EliteRamp);
-
-            switch(this.EliteTierDefs)
+            var customElite = new CustomElite($"Elite{this.Name}", this.EliteEquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.Name}", tierDefs, this.EliteRamp);
+            if (this.EliteTierDef < EliteTier.T2)
             {
-                default:
-                    customElite.EliteTierDefs = EliteBase.GetEliteTierDef($"RoR2/Base/EliteLightning/edLightning{(honor ? "Honor" : string.Empty)}.asset");
-                    customElite.EliteTierDefs ??= honor ? [EliteAPI.VanillaEliteOnlyFirstTierDef] : [EliteAPI.VanillaFirstTierDef];
+                tierDefs = this.GetVanillaEliteTierDef(this.EliteTierDef + 1);
+                if (tierDefs is not null)
+                {
+                    var customHonorElite = new CustomElite($"Elite{this.Name}Honor", this.EliteEquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.Name}", tierDefs, this.EliteRamp);
 
-                    customElite.EliteDef.healthBoostCoefficient = MoreElites.t1HealthMult.Value;
-                    customElite.EliteDef.damageBoostCoefficient = MoreElites.t1DamageMult.Value;
-                    break;
+                    customHonorElite.EliteDef.healthBoostCoefficient = MoreElites.t1HonorHealthMult.Value;
+                    customHonorElite.EliteDef.damageBoostCoefficient = MoreElites.t1HonorDamageMult.Value;
 
-                case EliteTier.T1Upgrade:
-                    customElite.EliteTierDefs = EliteBase.GetEliteTierDef($"RoR2/DLC2/Elites/EliteAurelionite/edAurelionite{(honor ? "Honor" : string.Empty)}.asset");
-                    customElite.EliteTierDefs ??= honor ? [EliteAPI.VanillaEliteOnlyFirstTierDef] : [EliteAPI.VanillaFirstTierDef];
+                    EliteAPI.Add(customHonorElite);
+                }
 
-                    customElite.EliteDef.healthBoostCoefficient = MoreElites.t1HealthMult.Value;
-                    customElite.EliteDef.damageBoostCoefficient = MoreElites.t1DamageMult.Value;
-                    break;
-
-                case EliteTier.T2:
-                    customElite.EliteTierDefs = EliteBase.GetEliteTierDef("RoR2/Base/ElitePoison/edPoison.asset");
-                    customElite.EliteTierDefs ??= [EliteAPI.VanillaEliteTiers[5]];
-
-                    customElite.EliteDef.healthBoostCoefficient = MoreElites.t2HealthMult.Value;
-                    customElite.EliteDef.damageBoostCoefficient = MoreElites.t2DamageMult.Value;
-                    break;
+                customElite.EliteDef.healthBoostCoefficient = MoreElites.t1HealthMult.Value;
+                customElite.EliteDef.damageBoostCoefficient = MoreElites.t1DamageMult.Value;
+            }
+            else
+            {
+                customElite.EliteDef.healthBoostCoefficient = MoreElites.t2HealthMult.Value;
+                customElite.EliteDef.damageBoostCoefficient = MoreElites.t2DamageMult.Value;
             }
 
             EliteAPI.Add(customElite);
@@ -216,34 +214,30 @@ namespace MoreElites
             return customElite;
         }
 
-        private static bool IsValid(EliteDef ed)
+        private IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteTierDef(EliteTier tier)
         {
-            return ed &&
-                   ed.eliteEquipmentDef &&
-                   ed.eliteEquipmentDef.passiveBuffDef &&
-                   ed.eliteEquipmentDef.passiveBuffDef.isElite;
-        }
+            // 0 - none
+            // 1 - t1
+            // 2 - t1 honor
+            // 3 - t1 + gold
+            // 4 - t1 + gold honor
+            // 5 - t2
+            // 6 - lunar
 
-
-        private static IEnumerable<CombatDirector.EliteTierDef> GetEliteTierDef(string selector)
-        {
-            var affix = Addressables.LoadAssetAsync<EliteDef>(selector).WaitForCompletion();
-
-            if (affix)
+            if (tier == EliteTier.Invalid)
             {
-                var tiers = EliteAPI.VanillaEliteTiers.Where(etd => etd.eliteTypes.Where(IsValid).Contains(affix));
+                Log.Error("Invalid tier");
+                Log.Debug(new System.Diagnostics.StackTrace());
 
-                if (tiers.Any())
-                    return tiers;
-            }
-            else
-            {
-                Log.Error($"Affix {selector} is null!");
+                return null;
             }
 
-            Log.Error($"Unable to find vanilla tier with key {selector}. Falling back to default index!");
+            List<CombatDirector.EliteTierDef> tierDefs = [EliteAPI.VanillaEliteTiers[(int)tier]];
 
-            return null;
+            if (this.EliteTierDef is EliteTier.T1 or EliteTier.T1Honor)
+                tierDefs.Add(EliteAPI.VanillaEliteTiers[(int)tier + 2]);
+
+            return tierDefs;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace MoreElites.Elites
         public override string DescriptionText => "All attacks explode and periodically fire missiles.";
         public override string LoreText => "Hope you like dodging";
 
-        public override EliteTier EliteTierDefs => EliteTier.T1Upgrade;
+        public override EliteTier EliteTierDef => EliteTier.T1Upgrade;
         public override Color EliteColor => Color.black;
         public override Texture2D EliteRamp => Addressables.LoadAssetAsync<Texture2D>("RoR2/DLC1/Common/ColorRamps/texRampStrongerBurn.png").WaitForCompletion();
         public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
@@ -86,12 +86,13 @@ namespace MoreElites.Elites
 
         public class VolatileMissileController : CharacterBody.ItemBehavior
         {
-            private float fireTimer;
-            private static float fireInterval = 3f;
             private static float normalBaseDamage = 12f;
             private static float normalLevelDamage = 2.4f;
             private static float championBaseDamage = 18f;
             private static float championLevelDamage = 3.6f;
+
+            private float fireTimer;
+            private float fireInterval = 3f;
 
             private void FixedUpdate()
             {
@@ -101,7 +102,7 @@ namespace MoreElites.Elites
                 this.fireTimer += Time.fixedDeltaTime;
                 if (this.fireTimer >= fireInterval)
                 {
-                    this.fireTimer %= 1;
+                    this.fireTimer = 0;
 
                     fireInterval = UnityEngine.Random.Range(1, 6);
 

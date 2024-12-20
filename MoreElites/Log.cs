@@ -1,21 +1,15 @@
-﻿using BepInEx.Logging;
+﻿using System.Diagnostics;
+using BepInEx.Logging;
 
 namespace MoreElites
 {
     internal static class Log
     {
         private static ManualLogSource _logger;
-        public static void Init(ManualLogSource log)
-        {
-            _logger = log;
-        }
+        public static void Init(ManualLogSource log) => _logger = log;
 
-        public static void LogDebug(object message)
-        {
-#if DEBUG
-            Log(LogLevel.Debug, message);
-#endif
-        }
+        [Conditional("DEBUG")]
+        public static void Debug(object message) => LogData(LogLevel.Debug, message);
         public static void Info(object message) => LogData(LogLevel.Info, message);
         public static void Message(object message) => LogData(LogLevel.Message, message);
         public static void Warning(object message) => LogData(LogLevel.Warning, message);

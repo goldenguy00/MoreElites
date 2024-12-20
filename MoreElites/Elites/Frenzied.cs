@@ -15,7 +15,7 @@ namespace MoreElites.Elites
         public override string DescriptionText => "Increased move and attack speed";
         public override string LoreText => "LET CHAOS BURN THE WORLD";
 
-        public override EliteTier EliteTierDefs => EliteTier.T1;
+        public override EliteTier EliteTierDef => EliteTier.T1;
         public override Color EliteColor => Color.yellow;
         public override Texture2D EliteRamp => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampWarbanner2.png").WaitForCompletion();
         public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
@@ -68,23 +68,24 @@ namespace MoreElites.Elites
 
         public class FrenziedTeleportController : CharacterBody.ItemBehavior
         {
-            private float fireTimer;
-            private Vector3 blinkDestination = Vector3.zero;
-            private Vector3 blinkStart = Vector3.zero;
-
             private static float fireInterval = 10f;
             private static GameObject blinkPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Treebot/SonicBoomEffect.prefab").WaitForCompletion();
             private static float shortBlinkDistance = 25f;
             private static float blinkDistance = 50f;
 
+            private float fireTimer;
+            private Vector3 blinkDestination = Vector3.zero;
+            private Vector3 blinkStart = Vector3.zero;
+
             private void FixedUpdate()
             {
                 if (!this.body || this.body.isPlayerControlled || !this.body.healthComponent || !this.body.healthComponent.alive)
                     return;
+
                 this.fireTimer += Time.fixedDeltaTime;
                 if (this.fireTimer >= fireInterval)
                 {
-                    this.fireTimer %= 1;
+                    this.fireTimer = 0;
                     CalculateBlinkDestination();
 
                     if (this.blinkStart != this.blinkDestination)
@@ -96,7 +97,10 @@ namespace MoreElites.Elites
             {
                 // Play_voidRaid_fall_return
                 Util.PlaySound("Play_parent_teleport", this.gameObject);
+
                 this.CreateBlinkEffect(Util.GetCorePosition(this.gameObject));
+                this.CalculateBlinkDestination();
+
                 TeleportHelper.TeleportBody(this.body, this.blinkDestination, false);
 
                 yield return new WaitForSeconds(0.33f);
