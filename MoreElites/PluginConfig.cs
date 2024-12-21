@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx;
 using BepInEx.Configuration;
-using MoreElites.Elites;
 using UnityEngine;
-using static MoreElites.PluginConfig;
 
 namespace MoreElites
 {
@@ -16,9 +13,9 @@ namespace MoreElites
     {
         public enum ConfigTier
         {
-            T1 = 1,
-            AboveStage3 = 3,
-            T2 = 5
+            Tier1 = 1,
+            GuildedTier = 3,
+            Tier2 = 5
         }
         internal static ConfigFile MEConfig;
 
@@ -61,8 +58,8 @@ namespace MoreElites
             eliteTierEcho = MEConfig.BindOption(
                 "General",
                 "Elite Tier Echo",
-                ConfigTier.T2,
-                "Sets the Elite Tier for the Echo Elite (Shadow Clone Elite). A good alt is T1Upgrade (Stage 3 and later)");
+                ConfigTier.GuildedTier,
+                "Sets the Elite Tier for the Echo Elite (Shadow Clone Elite). A good alt is GuildedTier (Stage 3 and later)");
 
             // volatile
             enableVolatile = MEConfig.BindOption(
@@ -73,8 +70,8 @@ namespace MoreElites
             eliteTierVolatile = MEConfig.BindOption(
                 "General",
                 "Elite Tier Volatile",
-                ConfigTier.T1,
-                "Sets the Elite Tier for the Volatile Elite (RoR1 Missile Elite). A good alt is T1Upgrade (Stage 3 and later)");
+                ConfigTier.GuildedTier,
+                "Sets the Elite Tier for the Volatile Elite (RoR1 Missile Elite). A good alt is GuidedTier (Stage 3 and later)");
 
             // empowering
             enableEmpowering = MEConfig.BindOption(
@@ -85,7 +82,7 @@ namespace MoreElites
             eliteTierEmpowering = MEConfig.BindOption(
                 "General",
                 "Elite Tier Empowering",
-                ConfigTier.T1,
+                ConfigTier.Tier1,
                 "Sets the Elite Tier for the Empowering Elite (Warbanner Elite)");
 
             // frenzied
@@ -97,7 +94,7 @@ namespace MoreElites
             eliteTierFrenzied = MEConfig.BindOption(
                 "General",
                 "Elite Tier Frenzied",
-                ConfigTier.T1,
+                ConfigTier.Tier1,
                 "Sets the Elite Tier for the Frenzied Elite (RoR1 Elite)");
 
 

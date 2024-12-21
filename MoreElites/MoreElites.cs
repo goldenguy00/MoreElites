@@ -2,7 +2,6 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using System.Security.Permissions;
 using System.Security;
-using MoreElites.Elites;
 
 [module: UnverifiableCode]
 #pragma warning disable CS0618 // Type or member is obsolete
