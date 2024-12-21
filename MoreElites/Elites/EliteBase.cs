@@ -5,7 +5,7 @@ using R2API;
 using RoR2;
 using UnityEngine;
 
-namespace MoreElites.Elites
+namespace MoreElites
 {
     public abstract class EliteBase<T> : EliteBase where T : EliteBase<T>
     {
@@ -87,7 +87,10 @@ namespace MoreElites.Elites
                 foreach (var elite in EliteInstances)
                 {
                     if (elite?.EliteBuffDef == buffDef)
+                    {
                         elite.OnBuffGained(self);
+                        return;
+                    }
                 }
             }
         }
@@ -101,7 +104,10 @@ namespace MoreElites.Elites
                 foreach (var elite in EliteInstances)
                 {
                     if (elite?.EliteBuffDef == buffDef)
+                    {
                         elite.OnBuffLost(self);
+                        return;
+                    }
                 }
             }
         }

@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
-using System;
 
-namespace MoreElites.Elites
+namespace MoreElites
 {
     public class Echo : EliteBase<Echo>
     {
@@ -80,99 +79,100 @@ namespace MoreElites.Elites
             void AddOverlay(Material overlayMaterial, bool condition)
             {
                 if (self.activeOverlayCount < CharacterModel.maxOverlays && condition)
-                {
                     self.currentOverlays[self.activeOverlayCount++] = overlayMaterial;
-                }
             }
         }
 
         public class CustomAffixEchoBehavior : CharacterBody.ItemBehavior
         {
-            private DeployableMinionSpawner echoSpawner1;
-            private DeployableMinionSpawner echoSpawner2;
-            private CharacterSpawnCard spawnCard;
-            private readonly List<CharacterMaster> spawnedEchoes = [];
+            public DeployableMinionSpawner echoSpawner1;
+            public DeployableMinionSpawner echoSpawner2;
 
-            private void FixedUpdate() => this.spawnCard.nodeGraphType = this.body.isFlying ? MapNodeGroup.GraphType.Air : MapNodeGroup.GraphType.Ground;
+            public CharacterSpawnCard spawnCard;
 
-            private void Awake()
+            public List<CharacterMaster> spawnedEchoes = new List<CharacterMaster>();
+
+            public void FixedUpdate()
             {
-                this.enabled = false;
-                // Play_voidRaid_breakLeg Play_voidRaid_fall_pt2  
-                // Play_affix_void_spawn
+                spawnCard.nodeGraphType = body.isFlying ? MapNodeGroup.GraphType.Air : MapNodeGroup.GraphType.Ground;
+            }
+
+            public void Awake()
+            {
+                enabled = false;
                 Util.PlaySound("Play_voidRaid_fog_explode", this.gameObject);
             }
 
-            private void OnEnable()
+            public void OnEnable()
             {
-                var masterIndexForBody = MasterCatalog.FindAiMasterIndexForBody(this.body.bodyIndex);
-
-                this.spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
-                this.spawnCard.prefab = MasterCatalog.GetMasterPrefab(masterIndexForBody);
-                this.spawnCard.inventoryToCopy = this.body.inventory;
-                this.spawnCard.itemsToGrant = [new ItemCountPair()
-                {
-                    itemDef = Instance.summonedEchoItem,
-                    count = 1
-                }];
-
-                this.CreateSpawners();
+                var masterIndex = MasterCatalog.FindAiMasterIndexForBody(body.bodyIndex);
+                spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
+                spawnCard.prefab = MasterCatalog.GetMasterPrefab(masterIndex);
+                spawnCard.inventoryToCopy = body.inventory;
+                spawnCard.equipmentToGrant = new EquipmentDef[1];
+                spawnCard.itemsToGrant =
+                [
+                    new ItemCountPair
+                    {
+                        itemDef = RoR2Content.Items.SummonedEcho,
+                        count = 1
+                    }
+                ];
+                CreateSpawners();
             }
 
-            private void OnDisable()
+            public void OnDisable()
             {
-                Destroy(this.spawnCard);
-                this.spawnCard = null;
-
-                for (var index = this.spawnedEchoes.Count - 1; index >= 0; --index)
+                Destroy(spawnCard);
+                spawnCard = null;
+                for (var num = spawnedEchoes.Count - 1; num >= 0; num--)
                 {
-                    if (this.spawnedEchoes[index])
-                        this.spawnedEchoes[index].TrueKill();
+                    if (spawnedEchoes[num])
+                        spawnedEchoes[num].TrueKill();
                 }
 
-                this.DestroySpawners();
+                DestroySpawners();
             }
 
-            private void CreateSpawners()
+            public void CreateSpawners()
             {
-                var rng = new Xoroshiro128Plus(Run.instance.seed ^ (ulong)this.GetInstanceID());
-                CreateSpawner(ref this.echoSpawner1, DeployableSlot.RoboBallRedBuddy, this.spawnCard);
-                CreateSpawner(ref this.echoSpawner2, DeployableSlot.RoboBallGreenBuddy, this.spawnCard);
-
-                void CreateSpawner(
-                  ref DeployableMinionSpawner buddySpawner,
-                  DeployableSlot deployableSlot,
-                  SpawnCard spawnCard)
+                var rng = new Xoroshiro128Plus(Run.instance.seed ^ (ulong)GetInstanceID());
+                CreateSpawner(ref echoSpawner1, DeployableSlot.RoboBallRedBuddy, spawnCard);
+                CreateSpawner(ref echoSpawner2, DeployableSlot.RoboBallGreenBuddy, spawnCard);
+                void CreateSpawner(ref DeployableMinionSpawner buddySpawner, DeployableSlot deployableSlot, SpawnCard spawnCard)
                 {
-                    buddySpawner = new DeployableMinionSpawner(this.body.master, deployableSlot, rng)
+                    buddySpawner = new DeployableMinionSpawner(body.master, deployableSlot, rng)
                     {
                         respawnInterval = 30f,
                         spawnCard = spawnCard
                     };
-                    buddySpawner.onMinionSpawnedServer += this.OnMinionSpawnedServer;
+                    buddySpawner.onMinionSpawnedServer += OnMinionSpawnedServer;
                 }
             }
 
-            private void DestroySpawners()
+            public void DestroySpawners()
             {
-                this.echoSpawner1?.Dispose();
-                this.echoSpawner1 = null;
-                this.echoSpawner2?.Dispose();
-                this.echoSpawner2 = null;
+                echoSpawner1?.Dispose();
+                echoSpawner1 = null;
+                echoSpawner2?.Dispose();
+                echoSpawner2 = null;
             }
 
-            private void OnMinionSpawnedServer(SpawnCard.SpawnResult spawnResult)
+            public void OnMinionSpawnedServer(SpawnCard.SpawnResult spawnResult)
             {
-                if (spawnResult.spawnedInstance && spawnResult.spawnedInstance.TryGetComponent<CharacterMaster>(out var spawnedMaster))
+                var spawnedInstance = spawnResult.spawnedInstance;
+                if (!spawnedInstance)
+                    return;
+
+                var spawnedMaster = spawnedInstance.GetComponent<CharacterMaster>();
+                if (spawnedMaster)
                 {
-                    this.spawnedEchoes.Add(spawnedMaster);
-                    OnDestroyCallback.AddCallback(spawnedMaster.gameObject, OnDestroyHandler);
+                    spawnedEchoes.Add(spawnedMaster);
+                    OnDestroyCallback.AddCallback(spawnedMaster.gameObject, delegate
+                    {
+                        spawnedEchoes.Remove(spawnedMaster);
+                    });
                 }
-            }
-
-            private void OnDestroyHandler(OnDestroyCallback callback)
-            {
-                this.spawnedEchoes.Remove(callback.GetComponent<CharacterMaster>());
             }
         }
 
@@ -204,8 +204,8 @@ namespace MoreElites.Elites
                     this.fireTimer = 0;
 
                     var damage = this.body.isChampion
-                        ? championBaseDamage + (championLevelDamage * this.body.level)
-                        : normalBaseDamage + (normalLevelDamage * this.body.level);
+                        ? championBaseDamage + championLevelDamage * this.body.level
+                        : normalBaseDamage + normalLevelDamage * this.body.level;
 
                     ProjectileManager.instance.FireProjectile(new FireProjectileInfo()
                     {

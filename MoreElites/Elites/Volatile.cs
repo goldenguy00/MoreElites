@@ -4,7 +4,7 @@ using RoR2.Projectile;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace MoreElites.Elites
+namespace MoreElites
 {
     public class Volatile : EliteBase<Volatile>
     {
@@ -14,7 +14,7 @@ namespace MoreElites.Elites
 
         public override string Name => "Volatile";
         public override string EquipmentName => "Volatile Aspect";
-        public override string PickupText => "Aspect of Volatility";
+        public override string PickupText => "Aspect of Volatile";
         public override string DescriptionText => "All attacks explode and periodically fire missiles.";
         public override string LoreText => "Hope you like dodging";
 
@@ -54,33 +54,39 @@ namespace MoreElites.Elites
         {
             orig(self, damageInfo, hitObject);
 
-            if (damageInfo.procCoefficient > 0 && !damageInfo.rejected && damageInfo.attacker && damageInfo.attacker.TryGetComponent<CharacterBody>(out var body) && body.HasBuff(EliteBuffDef))
+            if (damageInfo.procCoefficient > 0f && !damageInfo.rejected && damageInfo.attacker && damageInfo.attacker.TryGetComponent<CharacterBody>(out var body))
             {
-                var radius = 4 * damageInfo.procCoefficient;
+                // dumb ass fix for zet aspect IL hook here, w/e
+                var eliteBuff = this.EliteBuffDef;
 
-                EffectManager.SpawnEffect(behemoExplosion, new EffectData()
+                if (body.HasBuff(eliteBuff))
                 {
-                    origin = damageInfo.position,
-                    scale = radius,
-                    rotation = Util.QuaternionSafeLookRotation(damageInfo.force)
-                }, true);
+                    float radius = 4 * damageInfo.procCoefficient;
 
-                new BlastAttack()
-                {
-                    position = damageInfo.position,
-                    baseDamage = Util.OnHitProcDamage(damageInfo.damage, body.damage, 0.25f),
-                    baseForce = 0f,
-                    radius = radius,
-                    attacker = damageInfo.attacker,
-                    inflictor = damageInfo.inflictor,
-                    teamIndex = TeamComponent.GetObjectTeam(damageInfo.attacker),
-                    crit = damageInfo.crit,
-                    procChainMask = damageInfo.procChainMask,
-                    procCoefficient = 0f,
-                    damageColorIndex = DamageColorIndex.Item,
-                    falloffModel = BlastAttack.FalloffModel.Linear,
-                    damageType = damageInfo.damageType
-                }.Fire();
+                    EffectManager.SpawnEffect(behemoExplosion, new EffectData()
+                    {
+                        origin = damageInfo.position,
+                        scale = radius,
+                        rotation = Util.QuaternionSafeLookRotation(damageInfo.force)
+                    }, true);
+
+                    new BlastAttack
+                    {
+                        position = damageInfo.position,
+                        baseDamage = Util.OnHitProcDamage(damageInfo.damage, body.damage, 0.25f),
+                        baseForce = 0f,
+                        radius = radius,
+                        attacker = damageInfo.attacker,
+                        inflictor = null,
+                        teamIndex = TeamComponent.GetObjectTeam(damageInfo.attacker),
+                        crit = damageInfo.crit,
+                        procChainMask = damageInfo.procChainMask,
+                        procCoefficient = 0f,
+                        damageColorIndex = DamageColorIndex.Item,
+                        falloffModel = BlastAttack.FalloffModel.SweetSpot,
+                        damageType = damageInfo.damageType
+                    }.Fire();
+                }
             }
         }
 
@@ -104,7 +110,7 @@ namespace MoreElites.Elites
                 {
                     this.fireTimer = 0;
 
-                    fireInterval = UnityEngine.Random.Range(1, 6);
+                    fireInterval = Random.Range(1, 6);
 
                     var damage = this.body.isChampion
                         ? championBaseDamage + championLevelDamage * this.body.level
