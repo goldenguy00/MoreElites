@@ -9,7 +9,7 @@ namespace MoreElites
 {
     public class Frenzied : EliteBase<Frenzied>
     {
-        public override string Name => "FrenziedNuxlar";
+        public override string Name => "Frenzied";
         public override string EquipmentName => "Frenzied Aspect";
         public override string PickupText => "Aspect of the Frenzied Flame";
         public override string DescriptionText => "Increased move and attack speed";
@@ -36,6 +36,7 @@ namespace MoreElites
         {
             var def = base.SetupEquipment();
             def.cooldown = 10f;
+            def.name += "Nuxlar";
 
             return def;
         }
