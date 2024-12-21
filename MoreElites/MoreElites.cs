@@ -14,9 +14,9 @@ namespace MoreElites
     public class MoreElites : BaseUnityPlugin
     {
         public const string PluginGUID = $"com.{PluginAuthor}.{PluginName}";
-        public const string PluginAuthor = "Nuxlar";
+        public const string PluginAuthor = "score";
         public const string PluginName = "MoreElites";
-        public const string PluginVersion = "1.0.4";
+        public const string PluginVersion = "1.1.0";
 
         public static MoreElites Instance { get; private set; }
 

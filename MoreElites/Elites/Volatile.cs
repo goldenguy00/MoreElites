@@ -19,7 +19,7 @@ namespace MoreElites
         public override string LoreText => "Hope you like dodging";
 
         public override EliteTier EliteTierDef => (EliteTier)PluginConfig.eliteTierVolatile.Value;
-        public override Color EliteColor => Color.black;
+        public override Color EliteColor => Color.red;
         public override Texture2D EliteRamp => Addressables.LoadAssetAsync<Texture2D>("RoR2/DLC1/Common/ColorRamps/texRampStrongerBurn.png").WaitForCompletion();
         public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
         public override Sprite AspectIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
