@@ -14,7 +14,7 @@ namespace MoreElites
         public enum ConfigTier
         {
             Tier1 = 1,
-            GuildedTier = 3,
+            GuildedTier = 4,
             Tier2 = 5
         }
         internal static ConfigFile MEConfig;
@@ -46,8 +46,6 @@ namespace MoreElites
                 InitRoO();
 
             MEConfig = new ConfigFile(Paths.ConfigPath + "\\com.Nuxlar.MoreElites.cfg", true);
-
-            EliteBase.EliteTier[] validEliteTiers = [EliteBase.EliteTier.T1, EliteBase.EliteTier.T1Upgrade, EliteBase.EliteTier.T2];
 
             // echo
             enableEcho = MEConfig.BindOption(
@@ -165,7 +163,7 @@ namespace MoreElites
                 tex.LoadImage(iconStream);
                 var icon = Sprite.Create(tex, new Rect(0, 0, 256, 256), new Vector2(0.5f, 0.5f));
 
-                RiskOfOptions.ModSettingsManager.SetModIcon(icon);
+                RiskOfOptions.ModSettingsManager.SetModIcon(icon, MoreElites.PluginGUID, MoreElites.PluginName);
             }
             catch (Exception e)
             {

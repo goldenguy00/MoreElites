@@ -32,13 +32,12 @@ namespace MoreElites
             On.RoR2.EquipmentSlot.PerformEquipmentAction += EquipmentSlot_PerformEquipmentAction;
         }
 
-        public override EquipmentDef SetupEquipment()
+        public override void SetupEquipment()
         {
-            var def = base.SetupEquipment();
-            def.cooldown = 10f;
-            def.name += "Nuxlar";
+            base.SetupEquipment();
 
-            return def;
+            this.CustomEquipmentDef.EquipmentDef.cooldown = 10f;
+            this.CustomEquipmentDef.EquipmentDef.name += "Nuxlar";
         }
 
         public override void OnBuffGained(CharacterBody self) => self.AddItemBehavior<FrenziedTeleportController>(1);
@@ -47,18 +46,21 @@ namespace MoreElites
         private bool EquipmentSlot_PerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentDef equipmentDef)
         {
             var result = orig(self, equipmentDef);
-            if (!result && equipmentDef == EliteEquipmentDef)
+
+            if (!result && equipmentDef == this.CustomEquipmentDef?.EquipmentDef)
             {
                 if (self.characterBody && self.characterBody.isPlayerControlled && self.characterBody.TryGetComponent<FrenziedTeleportController>(out var teleporter))
                     teleporter.StartCoroutine(teleporter.Teleport());
+
                 return true;
             }
+
             return result;
         }
 
         private void Frenzy(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            if (sender && sender.HasBuff(EliteBuffDef))
+            if (sender.HasBuff(EliteBuffDef))
             {
                 args.baseMoveSpeedAdd += 2f;
                 args.attackSpeedMultAdd += 0.5f;

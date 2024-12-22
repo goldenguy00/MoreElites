@@ -16,7 +16,7 @@ namespace MoreElites
         public const string PluginGUID = $"com.{PluginAuthor}.{PluginName}";
         public const string PluginAuthor = "score";
         public const string PluginName = "MoreElites";
-        public const string PluginVersion = "1.1.0";
+        public const string PluginVersion = "1.1.2";
 
         public static MoreElites Instance { get; private set; }
 

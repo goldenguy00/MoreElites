@@ -6,13 +6,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
+using System.Linq;
 
 namespace MoreElites
 {
     public class Echo : EliteBase<Echo>
     {
-        public ItemDef summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
-        public Material overlayMat = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/voidoutro/matVoidRaidCrabEyeOverlay1BLUE.mat").WaitForCompletion();
+        public ItemDef summonedEchoItem;
+        public Material echoMatBlack = Addressables.LoadAssetAsync<Material>("RoR2/InDev/matEcho.mat").WaitForCompletion();
+        public GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/InDev/EchoHunterProjectile.prefab").WaitForCompletion().InstantiateClone("EchoHunterProjectile");
 
         public override string Name => "Echo";
         public override string EquipmentName => "Echo Aspect";
@@ -26,43 +28,67 @@ namespace MoreElites
         public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
         public override Sprite AspectIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
 
-        public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>("RoR2/InDev/matEcho.mat").WaitForCompletion();
+        public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/voidoutro/matVoidRaidCrabEyeOverlay1BLUE.mat").WaitForCompletion();
         public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion().InstantiateClone("PickupAffixEcho", false);
 
         public override void Init()
         {
             base.Init();
 
-            ContentAddition.AddItemDef(summonedEchoItem);
+            var orig = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
+
+            var customSummonItem = new CustomItem("EchoSummonItem",
+                this.CustomEquipmentDef.EquipmentDef.nameToken,
+                this.CustomEquipmentDef.EquipmentDef.descriptionToken,
+                this.CustomEquipmentDef.EquipmentDef.loreToken,
+                this.CustomEquipmentDef.EquipmentDef.pickupToken,
+                orig.pickupIconSprite,
+                orig.pickupModelPrefab,
+                orig.tier,
+                orig.tags,
+                orig.canRemove,
+                orig.hidden, null, null);
+
+            this.summonedEchoItem = customSummonItem.ItemDef;
+            ItemAPI.Add(customSummonItem);
 
             var celestineHalo = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/DisplayEliteStealthCrown.prefab").WaitForCompletion().InstantiateClone("EchoCrown");
             celestineHalo.AddComponent<NetworkIdentity>();
 
-            ItemAPI.Add(new CustomEquipment(CustomEliteDef.EliteDef.eliteEquipmentDef, ItemDisplays.CreateItemDisplayRules(celestineHalo, EliteMaterial)));
+            this.CustomEquipmentDef.ItemDisplayRules = ItemDisplays.CreateItemDisplayRules(celestineHalo, EliteMaterial);
 
             RecalculateStatsAPI.GetStatCoefficients += ReduceSummonHP;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
             On.RoR2.CharacterModel.UpdateOverlays += CharacterModel_UpdateOverlays;
         }
 
-        public override void OnBuffGained(CharacterBody self) => self.AddItemBehavior<CustomAffixEchoBehavior>(1);
-        public override void OnBuffLost(CharacterBody self) => self.AddItemBehavior<CustomAffixEchoBehavior>(0);
+        public override void OnBuffGained(CharacterBody self)
+        {
+            if (NetworkServer.active)
+                self.AddItemBehavior<CustomAffixEchoBehavior>(1);
+        }
+
+        public override void OnBuffLost(CharacterBody self)
+        {
+            if (NetworkServer.active)
+                self.AddItemBehavior<CustomAffixEchoBehavior>(0);
+        }
 
         private void ReduceSummonHP(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            if (sender && sender.inventory)
-            {
-                var stack = sender.inventory.GetItemCount(summonedEchoItem);
-                if (stack > 0)
-                    args.baseCurseAdd += Mathf.Pow(1 / 0.1f, stack) - 1;
-            }
+            var stack = sender.inventory ? sender.inventory.GetItemCount(summonedEchoItem) : 0;
+
+            if (stack > 0)
+                args.baseCurseAdd += Mathf.Pow(1 / 0.1f, stack) - 1;
         }
 
         private void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
         {
             orig(self, body);
 
-            if (self.inventory && self.inventory.GetItemCount(summonedEchoItem) > 0)
+            var stack = self.inventory ? self.inventory.GetItemCount(summonedEchoItem) : 0;
+
+            if (stack > 0)
                 body.gameObject.AddComponent<CustomSummonedEchoBodyBehavior>();
         }
 
@@ -72,8 +98,8 @@ namespace MoreElites
 
             if (self.body && self.body.inventory)
             {
-                AddOverlay(overlayMat, self.body.HasBuff(EliteBuffDef));
-                AddOverlay(EliteMaterial, self.body.inventory.GetItemCount(summonedEchoItem) > 0);
+                AddOverlay(EliteMaterial, self.body.HasBuff(EliteBuffDef));
+                AddOverlay(echoMatBlack, self.body.inventory.GetItemCount(summonedEchoItem) > 0);
             }
 
             void AddOverlay(Material overlayMaterial, bool condition)
@@ -92,9 +118,17 @@ namespace MoreElites
 
             public List<CharacterMaster> spawnedEchoes = new List<CharacterMaster>();
 
+            public bool hasEverSpawned;
+
             public void FixedUpdate()
             {
                 spawnCard.nodeGraphType = body.isFlying ? MapNodeGroup.GraphType.Air : MapNodeGroup.GraphType.Ground;
+
+                if (!hasEverSpawned)
+                {
+                    echoSpawner1.respawnStopwatch++;
+                    echoSpawner2.respawnStopwatch++;
+                }
             }
 
             public void Awake()
@@ -114,7 +148,7 @@ namespace MoreElites
                 [
                     new ItemCountPair
                     {
-                        itemDef = RoR2Content.Items.SummonedEcho,
+                        itemDef = Instance.summonedEchoItem,
                         count = 1
                     }
                 ];
@@ -143,6 +177,7 @@ namespace MoreElites
                 {
                     buddySpawner = new DeployableMinionSpawner(body.master, deployableSlot, rng)
                     {
+                        maxSpawnDistance = 20f,
                         respawnInterval = 30f,
                         spawnCard = spawnCard
                     };
@@ -167,6 +202,7 @@ namespace MoreElites
                 var spawnedMaster = spawnedInstance.GetComponent<CharacterMaster>();
                 if (spawnedMaster)
                 {
+                    hasEverSpawned = true;
                     spawnedEchoes.Add(spawnedMaster);
                     OnDestroyCallback.AddCallback(spawnedMaster.gameObject, delegate
                     {
@@ -183,7 +219,6 @@ namespace MoreElites
             private static float normalLevelDamage = 4.8f;
             private static float championBaseDamage = 32f;
             private static float championLevelDamage = 7.2f;
-            private static GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/InDev/EchoHunterProjectile.prefab").WaitForCompletion();
 
             private float fireTimer;
             private CharacterBody body;
@@ -217,7 +252,7 @@ namespace MoreElites
                         position = this.body.aimOrigin,
                         rotation = Quaternion.LookRotation(Vector3.up),
                         procChainMask = default,
-                        projectilePrefab = echoProjectile,
+                        projectilePrefab = Instance.echoProjectile,
                         force = 400f,
                         target = null
                     });

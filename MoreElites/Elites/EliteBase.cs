@@ -13,10 +13,10 @@ namespace MoreElites
 
         public EliteBase()
         {
-            if (Instance != null) throw new InvalidOperationException("Singleton class \"" + typeof(T).Name + "\" inheriting ItemBase was instantiated twice");
-            Instance = this as T;
+            if (Instance != null) 
+                throw new InvalidOperationException("Singleton class \"" + typeof(T).Name + "\" inheriting ItemBase was instantiated twice");
 
-            Instance.Init();
+            Instance = this as T;
             EliteInstances.Add(Instance);
         }
     }
@@ -25,11 +25,11 @@ namespace MoreElites
     {
         public enum EliteTier
         {
-            Invalid,
+            None,
             T1,
             T1Honor,
-            T1Upgrade,
-            T1UpgradeHonor,
+            T1GuildedHonor,
+            T1Guilded,
             T2,
             Lunar
         }
@@ -38,6 +38,7 @@ namespace MoreElites
         public static List<EliteBase> EliteInstances = [];
 
         public abstract string Name { get; }
+        public virtual string NameToken => this.Name.ToUpper() + "_SCORE";
         public abstract string EquipmentName { get; }
         public abstract string DescriptionText { get; }
         public abstract string PickupText { get; }
@@ -53,7 +54,7 @@ namespace MoreElites
         public abstract GameObject PickupModelPrefab { get; set; }
 
         public virtual BuffDef EliteBuffDef { get; set; }
-        public virtual EquipmentDef EliteEquipmentDef { get; set; }
+        public virtual CustomEquipment CustomEquipmentDef { get; set; }
         public virtual CustomElite CustomEliteDef { get; set; }
         public virtual CustomElite CustomEliteDefHonor { get; set; }
 
@@ -73,6 +74,17 @@ namespace MoreElites
 
             if (EliteInstances.Any())
             {
+                foreach (var elite in EliteBase.EliteInstances)
+                {
+                    elite.Init();
+                    ContentAddition.AddBuffDef(elite.EliteBuffDef);
+                    ItemAPI.Add(elite.CustomEquipmentDef);
+                    EliteAPI.Add(elite.CustomEliteDef);
+
+                    if (elite.CustomEliteDefHonor is not null)
+                        EliteAPI.Add(elite.CustomEliteDefHonor);
+                }
+
                 On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
                 On.RoR2.CharacterBody.OnBuffFinalStackLost += CharacterBody_OnBuffFinalStackLost;
             }
@@ -114,134 +126,102 @@ namespace MoreElites
 
         public virtual void Init()
         {
-            Log.Warning($"Initializing elite {this.Name}");
+            Log.Info($"Initializing elite {this.Name}");
 
             this.AddLanguageTokens();
-
-            this.EliteBuffDef = this.SetupBuff();
-            this.EliteEquipmentDef = this.SetupEquipment();
-            this.CustomEliteDef = this.SetupElite();
-
-            this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
-
+            this.SetupBuff();
+            this.SetupEquipment();
+            this.SetupElite();
         }
 
         public virtual void AddLanguageTokens()
         {
-            var name = this.Name;
+            LanguageAPI.Add($"ELITE_MODIFIER_{this.NameToken}", this.Name + " {0}");
 
-            LanguageAPI.Add($"ELITE_MODIFIER_{name}", name + " {0}");
-
-            LanguageAPI.Add($"EQUIPMENT_AFFIX_{name}_NAME", this.EquipmentName ?? $"{name} Aspect");
-            LanguageAPI.Add($"EQUIPMENT_AFFIX_{name}_PICKUP_DESC", this.PickupText ?? $"Aspect of {name}");
-            LanguageAPI.Add($"EQUIPMENT_AFFIX_{name}_DESC", this.DescriptionText ?? "");
-            LanguageAPI.Add($"EQUIPMENT_AFFIX_{name}_LORE", this.LoreText ?? "");
+            LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_NAME", this.EquipmentName ?? $"{this.Name} Aspect");
+            LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_PICKUP_DESC", this.PickupText ?? $"Aspect of {this.Name}");
+            LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_DESC", this.DescriptionText ?? "");
+            LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_LORE", this.LoreText ?? "");
         }
 
-        public virtual BuffDef SetupBuff()
+        public virtual void SetupBuff()
         {
-            var eliteBuffDef = ScriptableObject.CreateInstance<BuffDef>();
-            eliteBuffDef.name = $"Affix{this.Name}Buff";
-            eliteBuffDef.canStack = false;
-            eliteBuffDef.isCooldown = false;
-            eliteBuffDef.isDebuff = false;
-            eliteBuffDef.buffColor = EliteColor;
-            eliteBuffDef.iconSprite = EliteIcon;
-
-            ContentAddition.AddBuffDef(eliteBuffDef);
-
-            return eliteBuffDef;
+            this.EliteBuffDef = ScriptableObject.CreateInstance<BuffDef>();
+            this.EliteBuffDef.name = $"Affix{this.Name}Buff";
+            this.EliteBuffDef.canStack = false;
+            this.EliteBuffDef.isCooldown = false;
+            this.EliteBuffDef.isDebuff = false;
+            this.EliteBuffDef.buffColor = EliteColor;
+            this.EliteBuffDef.iconSprite = EliteIcon;
         }
 
-        public virtual EquipmentDef SetupEquipment()
+        public virtual void SetupEquipment()
         {
-            var eliteEquipmentDef = ScriptableObject.CreateInstance<EquipmentDef>();
-            eliteEquipmentDef.appearsInMultiPlayer = true;
-            eliteEquipmentDef.appearsInSinglePlayer = true;
-            eliteEquipmentDef.canBeRandomlyTriggered = false;
-            eliteEquipmentDef.canDrop = false;
-            eliteEquipmentDef.colorIndex = ColorCatalog.ColorIndex.Equipment;
-            eliteEquipmentDef.cooldown = 0.0f;
-            eliteEquipmentDef.isLunar = false;
-            eliteEquipmentDef.isBoss = false;
-            eliteEquipmentDef.dropOnDeathChance = affixDropChance;
-            eliteEquipmentDef.enigmaCompatible = false;
+            this.CustomEquipmentDef = new CustomEquipment(
+                name: $"Affix{this.Name}",
+                nameToken: $"EQUIPMENT_AFFIX_{this.NameToken}_NAME",
+                descriptionToken: $"EQUIPMENT_AFFIX_{this.NameToken}_DESC",
+                loreToken: $"EQUIPMENT_AFFIX_{this.NameToken}_LORE",
+                pickupToken: $"EQUIPMENT_AFFIX_{this.NameToken}_PICKUP_DESC",
+                pickupIconSprite: this.AspectIcon,
+                pickupModelPrefab: this.PickupModelPrefab,
+                cooldown: 0f,
+                canDrop: false,
+                enigmaCompatible: false,
+                isBoss: false,
+                isLunar: false,
+                passiveBuffDef: this.EliteBuffDef,
+                unlockableDef: null,
+                colorIndex: ColorCatalog.ColorIndex.Equipment,
+                appearsInMultiPlayer: true,
+                appearsInSinglePlayer: true,
+                itemDisplayRules: (ItemDisplayRuleDict)null);
 
-            eliteEquipmentDef.passiveBuffDef = this.EliteBuffDef;
-            eliteEquipmentDef.pickupIconSprite = this.AspectIcon;
-            eliteEquipmentDef.pickupModelPrefab = this.PickupModelPrefab;
-
-            foreach (var componentsInChild in eliteEquipmentDef.pickupModelPrefab.GetComponentsInChildren<Renderer>())
+            foreach (var componentsInChild in this.CustomEquipmentDef.EquipmentDef.pickupModelPrefab.GetComponentsInChildren<Renderer>())
                 componentsInChild.material = this.EliteMaterial;
-
-            eliteEquipmentDef.name = $"Affix{this.Name}";
-            eliteEquipmentDef.nameToken = $"EQUIPMENT_AFFIX_{this.Name}_NAME";
-            eliteEquipmentDef.descriptionToken = $"EQUIPMENT_AFFIX_{this.Name}_DESC";
-            eliteEquipmentDef.pickupToken = $"EQUIPMENT_AFFIX_{this.Name}_PICKUP_DESC";
-            eliteEquipmentDef.loreToken = $"EQUIPMENT_AFFIX_{this.Name}_LORE";
-
-            ContentAddition.AddEquipmentDef(eliteEquipmentDef);
-            return eliteEquipmentDef;
         }
 
-        public virtual CustomElite SetupElite()
+        public virtual void SetupElite()
         {
             var tierDefs = this.GetVanillaEliteTierDef(this.EliteTierDef);
             if (tierDefs is null)
-                return null;
+                return;
 
-            var customElite = new CustomElite($"Elite{this.Name}", this.EliteEquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.Name}", tierDefs, this.EliteRamp);
-            if (this.EliteTierDef < EliteTier.T2)
+            this.CustomEliteDef = new CustomElite($"ed{this.Name}", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", tierDefs, this.EliteRamp);
+            this.CustomEliteDef.EliteDef.healthBoostCoefficient = this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
+            this.CustomEliteDef.EliteDef.damageBoostCoefficient = this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
+
+            this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
+
+            var honorTierDefs = this.GetVanillaEliteHonorTierDef(this.EliteTierDef);
+            if (honorTierDefs is not null)
             {
-                tierDefs = this.GetVanillaEliteTierDef(this.EliteTierDef + 1);
-                if (tierDefs is not null)
-                {
-                    var customHonorElite = new CustomElite($"Elite{this.Name}Honor", this.EliteEquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.Name}", tierDefs, this.EliteRamp);
-
-                    customHonorElite.EliteDef.healthBoostCoefficient = PluginConfig.t1HonorHealthMult.Value;
-                    customHonorElite.EliteDef.damageBoostCoefficient = PluginConfig.t1HonorDamageMult.Value;
-
-                    EliteAPI.Add(customHonorElite);
-                }
-
-                customElite.EliteDef.healthBoostCoefficient = PluginConfig.t1HealthMult.Value;
-                customElite.EliteDef.damageBoostCoefficient = PluginConfig.t1DamageMult.Value;
+                this.CustomEliteDefHonor = new CustomElite($"ed{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);
+                this.CustomEliteDefHonor.EliteDef.healthBoostCoefficient = PluginConfig.t1HonorHealthMult.Value;
+                this.CustomEliteDefHonor.EliteDef.damageBoostCoefficient = PluginConfig.t1HonorDamageMult.Value;
             }
-            else
-            {
-                customElite.EliteDef.healthBoostCoefficient = PluginConfig.t2HealthMult.Value;
-                customElite.EliteDef.damageBoostCoefficient = PluginConfig.t2DamageMult.Value;
-            }
-
-            EliteAPI.Add(customElite);
-
-            return customElite;
         }
 
-        private IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteTierDef(EliteTier tier)
+        // 0 - none
+        // 1 - t1
+        // 2 - t1 honor
+        // 3 - t1 + gold honor
+        // 4 - t1 + gold
+        // 5 - t2
+        // 6 - lunar
+        private IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteTierDef(EliteTier tier) => tier switch
         {
-            // 0 - none
-            // 1 - t1
-            // 2 - t1 honor
-            // 3 - t1 + gold
-            // 4 - t1 + gold honor
-            // 5 - t2
-            // 6 - lunar
+            EliteTier.None => null,
+            EliteTier.T1 => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1], EliteAPI.VanillaEliteTiers[(int)EliteTier.T1Guilded]],
+            EliteTier.T1Honor => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1Honor], EliteAPI.VanillaEliteTiers[(int)EliteTier.T1GuildedHonor]],
+            _ => [EliteAPI.VanillaEliteTiers[(int)tier]]
+        };
 
-            if (tier == EliteTier.Invalid)
-            {
-                Log.Error("Invalid tier");
-                Log.Debug(new System.Diagnostics.StackTrace());
-
-                return null;
-            }
-
-            List<CombatDirector.EliteTierDef> tierDefs = [EliteAPI.VanillaEliteTiers[(int)tier]];
-
-            if (this.EliteTierDef is EliteTier.T1 or EliteTier.T1Honor)
-                tierDefs.Add(EliteAPI.VanillaEliteTiers[(int)tier + 2]);
-
-            return tierDefs;
-        }
+        private IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteHonorTierDef(EliteTier tier) => tier switch
+        {
+            EliteTier.T1 => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1Honor], EliteAPI.VanillaEliteTiers[(int)EliteTier.T1GuildedHonor]],
+            EliteTier.T1Guilded => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1GuildedHonor]],
+            _ => null
+        };
     }
 }

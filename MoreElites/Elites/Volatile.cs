@@ -35,14 +35,13 @@ namespace MoreElites
             VolatileProjectileGhost.transform.GetChild(1).GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Junk/Bandit/matThermiteFlare.mat").WaitForCompletion();
             VolatileProjectileGhost.transform.GetChild(2).GetComponent<MeshRenderer>().sharedMaterial = this.EliteMaterial;
             VolatileProjectileGhost.transform.GetChild(3).GetComponent<Light>().color = this.EliteColor;
-
             VolatileProjectile.GetComponent<ProjectileController>().ghostPrefab = this.VolatileProjectileGhost;
+
             var missileController = VolatileProjectile.GetComponent<MissileController>();
             missileController.acceleration = 2;
             missileController.deathTimer = 10;
             missileController.maxVelocity = 20;
             missileController.turbulence = 6f;
-            ContentAddition.AddProjectile(VolatileProjectile);
 
             On.RoR2.GlobalEventManager.OnHitAll += AddBehemoExplosion;
         }
