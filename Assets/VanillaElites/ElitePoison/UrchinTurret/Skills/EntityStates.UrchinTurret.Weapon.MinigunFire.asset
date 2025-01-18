@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 89795172, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: EntityStates.UrchinTurret.Weapon.MinigunFire
+  m_EditorClassIdentifier:
+  targetType:
+    assemblyQualifiedName: EntityStates.UrchinTurret.Weapon.MinigunFire, RoR2, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  serializedFieldsCollection:
+    serializedFields:
+    - fieldName: muzzleVfxPrefab
+      fieldValue:
+        stringValue:
+        objectValue: {fileID: 1260110830227383, guid: c4061f05677cc7c4a90f1d7ebca38edc, type: 2}
+    - fieldName: projectilePrefab
+      fieldValue:
+        stringValue:
+        objectValue: {fileID: 1045532888840366, guid: d976181c5da79464abfc58230d738ed9, type: 2}
+    - fieldName: baseFireInterval
+      fieldValue:
+        stringValue: 0.25
+        objectValue: {fileID: 0}
+    - fieldName: baseDamagePerSecondCoefficient
+      fieldValue:
+        stringValue: 1
+        objectValue: {fileID: 0}
+    - fieldName: bulletMinSpread
+      fieldValue:
+        stringValue: 0
+        objectValue: {fileID: 0}
+    - fieldName: bulletMaxSpread
+      fieldValue:
+        stringValue: 10
+        objectValue: {fileID: 0}
+    - fieldName: fireSound
+      fieldValue:
+        stringValue: Play_elite_antiHeal_turret_shot
+        objectValue: {fileID: 0}
+    - fieldName: startSound
+      fieldValue:
+        stringValue:
+        objectValue: {fileID: 0}
+    - fieldName: endSound
+      fieldValue:
+        stringValue:
+        objectValue: {fileID: 0}

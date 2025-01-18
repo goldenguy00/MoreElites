@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: matElitePoisonAreaIndicator
+  m_Shader: {fileID: 4800000, guid: dfddd986b56aabc47b29cdbfc4f666c6, type: 2}
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _EMISSION
+  m_LightmapFlags: 1
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+      _Cloud1Tex:
+        m_Texture: {fileID: 2800000, guid: c32c272427e4bbc4abd73ca7742808c3, type: 3}
+        m_Scale: {x: 24, y: 12}
+        m_Offset: {x: 0, y: 0}
+      _Cloud2Tex:
+        m_Texture: {fileID: 2800000, guid: 2f934f2e63c706b45b9deafda6a1f398, type: 3}
+        m_Scale: {x: 24, y: 24}
+        m_Offset: {x: 0, y: 0}
+      _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+      _RemapTex:
+        m_Texture: {fileID: 2800000, guid: 9bac39f289796224da6a20be008dcf0a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: {}
+    m_Floats:
+      _AlphaBoost: 0.9
+      _AlphaThreshold: 0.254
+      _Boost: 0.34
+      _BumpScale: 1
+      _Cull: 0
+      _Cutoff: 0.578
+      _DetailNormalMapScale: 1
+      _DstBlend: 0
+      _DstBlendFloat: 1
+      _ExternalAlpha: 1
+      _FadeFromVertexColorsOn: 0
+      _GlossMapScale: 1
+      _Glossiness: 0.5
+      _GlossyReflections: 1
+      _IntersectionStrength: 2
+      _InvFade: 5.5
+      _Metallic: 0
+      _Mode: 0
+      _OcclusionStrength: 1
+      _Parallax: 0.02
+      _RimPower: 10.6
+      _RimStrength: 0
+      _SmoothnessTextureChannel: 0
+      _SoftPower: 1
+      _SpecularHighlights: 1
+      _SrcBlend: 1
+      _SrcBlendFloat: 1
+      _TriplanarOn: 0
+      _UVSec: 0
+      _VertexColorsOn: 0
+      _ZWrite: 1
+    m_Colors:
+      _Color: {r: 1, g: 1, b: 1, a: 1}
+      _CutoffScroll: {r: -4, g: 9, b: 6, a: 7}
+      _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+      _RimColor: {r: 1, g: 0.68275857, b: 0, a: 0}
+      _TintColor: {r: 1.0294118, g: 1.0294118, b: 1.0294118, a: 1}
+  m_BuildTextureStacks: []

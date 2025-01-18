@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 89795172, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: EntityStates.VoidInfestor.Infest
+  m_EditorClassIdentifier:
+  targetType:
+    assemblyQualifiedName: EntityStates.VoidInfestor.Infest, RoR2, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  serializedFieldsCollection:
+    serializedFields:
+    - fieldName: successfulInfestEffectPrefab
+      fieldValue:
+        stringValue:
+        objectValue: {fileID: 1054654389259652, guid: 8bceb4d57da87f44b9ed1543dbf6ed58, type: 2}
+    - fieldName: searchMaxDistance
+      fieldValue:
+        stringValue: 100
+        objectValue: {fileID: 0}
+    - fieldName: searchMaxAngle
+      fieldValue:
+        stringValue: 180
+        objectValue: {fileID: 0}
+    - fieldName: infestVfxPrefab
+      fieldValue:
+        stringValue:
+        objectValue: {fileID: 1423055000058157, guid: b64c9f2f0304e204ea52329a9bd0de78, type: 2}
+    - fieldName: infestDamageCoefficient
+      fieldValue:
+        stringValue: 1
+        objectValue: {fileID: 0}
+    - fieldName: enterSoundString
+      fieldValue:
+        stringValue: Play_affix_void_bug_infect
+        objectValue: {fileID: 0}
+    - fieldName: enterEffectPrefab
+      fieldValue:
+        stringValue:
+        objectValue: {fileID: 0}
+    - fieldName: velocityTurnRate
+      fieldValue:
+        stringValue: 0
+        objectValue: {fileID: 0}
+    - fieldName: velocityInitialSpeed
+      fieldValue:
+        stringValue: 30
+        objectValue: {fileID: 0}

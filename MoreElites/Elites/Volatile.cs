@@ -22,7 +22,7 @@ namespace MoreElites
         public override Color EliteColor => Color.red;
         public override Texture2D EliteRamp => Addressables.LoadAssetAsync<Texture2D>("RoR2/DLC1/Common/ColorRamps/texRampStrongerBurn.png").WaitForCompletion();
         public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
-        public override Sprite AspectIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
+        public override Sprite AspectIcon => Sprite.Instantiate(Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion());
 
         public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>("RoR2/Base/MagmaWorm/matMagmaWormFireball.mat").WaitForCompletion();
         public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion().InstantiateClone("PickupAffixVolatile", false);
@@ -39,7 +39,8 @@ namespace MoreElites
 
             var missileController = VolatileProjectile.GetComponent<MissileController>();
             missileController.acceleration = 2;
-            missileController.deathTimer = 10;
+            missileController.deathTimer = 6;
+            missileController.giveupTimer = 4;
             missileController.maxVelocity = 20;
             missileController.turbulence = 6f;
 

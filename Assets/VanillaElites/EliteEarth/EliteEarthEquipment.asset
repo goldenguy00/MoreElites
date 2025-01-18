@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1512808244, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: EliteEarthEquipment
+  m_EditorClassIdentifier:
+  pickupModelPrefab: {fileID: 1514473611970512, guid: cfbf96979c1391544a4123ba54f0e130, type: 2}
+  cooldown: 10
+  nameToken: EQUIPMENT_AFFIXEARTH_NAME
+  pickupToken: EQUIPMENT_AFFIXEARTH_PICKUP
+  descriptionToken: EQUIPMENT_AFFIXEARTH_DESC
+  loreToken: EQUIPMENT_AFFIXEARTH_LORE
+  isConsumed: 0
+  pickupIconSprite: {fileID: 21300000, guid: c698b50ad0d70934a8a85db8ff7693ce, type: 2}
+  unlockableDef: {fileID: 0}
+  colorIndex: 5
+  canDrop: 0
+  dropOnDeathChance: 0.00025
+  canBeRandomlyTriggered: 0
+  enigmaCompatible: 0
+  isLunar: 0
+  isBoss: 0
+  passiveBuffDef: {fileID: 11400000, guid: 58f4651e44d147d4f9840375a06e15c6, type: 2}
+  appearsInSinglePlayer: 1
+  appearsInMultiPlayer: 1
+  requiredExpansion: {fileID: 11400000, guid: e04f48bd9da3eff4e942f17691e6dcff, type: 2}
+  mageElement: 0

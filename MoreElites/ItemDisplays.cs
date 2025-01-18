@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 
 namespace MoreElites
 {
-    public class ItemDisplays
+    public static class ItemDisplays
     {
         private static void ItemDisplaySetup(GameObject prefab)
         {

@@ -129,6 +129,7 @@ namespace MoreElites
             Log.Info($"Initializing elite {this.Name}");
 
             this.AddLanguageTokens();
+            this.SetupAssets();
             this.SetupBuff();
             this.SetupEquipment();
             this.SetupElite();
@@ -139,10 +140,12 @@ namespace MoreElites
             LanguageAPI.Add($"ELITE_MODIFIER_{this.NameToken}", this.Name + " {0}");
 
             LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_NAME", this.EquipmentName ?? $"{this.Name} Aspect");
-            LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_PICKUP_DESC", this.PickupText ?? $"Aspect of {this.Name}");
             LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_DESC", this.DescriptionText ?? "");
             LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_LORE", this.LoreText ?? "");
+            LanguageAPI.Add($"EQUIPMENT_AFFIX_{this.NameToken}_PICKUP_DESC", this.PickupText ?? $"Aspect of {this.Name}");
         }
+
+        public virtual void SetupAssets() { }
 
         public virtual void SetupBuff()
         {
@@ -187,7 +190,7 @@ namespace MoreElites
             if (tierDefs is null)
                 return;
 
-            this.CustomEliteDef = new CustomElite($"ed{this.Name}", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", tierDefs, this.EliteRamp);
+            this.CustomEliteDef = new CustomElite($"Elite{this.Name}", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", tierDefs, this.EliteRamp);
             this.CustomEliteDef.EliteDef.healthBoostCoefficient = this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
             this.CustomEliteDef.EliteDef.damageBoostCoefficient = this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
 
@@ -196,7 +199,7 @@ namespace MoreElites
             var honorTierDefs = this.GetVanillaEliteHonorTierDef(this.EliteTierDef);
             if (honorTierDefs is not null)
             {
-                this.CustomEliteDefHonor = new CustomElite($"ed{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);
+                this.CustomEliteDefHonor = new CustomElite($"Elite{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);
                 this.CustomEliteDefHonor.EliteDef.healthBoostCoefficient = PluginConfig.t1HonorHealthMult.Value;
                 this.CustomEliteDefHonor.EliteDef.damageBoostCoefficient = PluginConfig.t1HonorDamageMult.Value;
             }

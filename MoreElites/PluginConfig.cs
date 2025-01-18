@@ -40,6 +40,7 @@ namespace MoreElites
         public static ConfigEntry<float> t2HealthMult;
         public static ConfigEntry<float> t2DamageMult;
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public static void Init()
         {
             if (MoreElites.RooInstalled)
@@ -189,7 +190,9 @@ namespace MoreElites
                 description += " (restart required)";
 
             var configEntry = myConfig.Bind(section, name, defaultValue, new ConfigDescription(description, null));
-            TryRegisterOption(configEntry, restartRequired);
+            
+            if (MoreElites.RooInstalled)
+                TryRegisterOption(configEntry, restartRequired);
 
             return configEntry;
         }
@@ -220,7 +223,8 @@ namespace MoreElites
 
             var configEntry = myConfig.Bind(section, name, defaultValue, new ConfigDescription(description, range));
 
-            TryRegisterOptionSlider(configEntry, min, max, restartRequired);
+            if (MoreElites.RooInstalled)
+                TryRegisterOptionSlider(configEntry, min, max, restartRequired);
 
             return configEntry;
         }
@@ -238,7 +242,8 @@ namespace MoreElites
 
             var configEntry = myConfig.Bind(section, name, defaultValue, new ConfigDescription(description, new AcceptableValueRange<float>(min, max)));
 
-            TryRegisterOptionSteppedSlider(configEntry, increment, min, max, restartRequired);
+            if (MoreElites.RooInstalled)
+                TryRegisterOptionSteppedSlider(configEntry, increment, min, max, restartRequired);
 
             return configEntry;
         }

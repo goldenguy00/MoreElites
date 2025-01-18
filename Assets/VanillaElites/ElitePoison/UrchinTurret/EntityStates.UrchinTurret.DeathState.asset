@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 89795172, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: EntityStates.UrchinTurret.DeathState
+  m_EditorClassIdentifier:
+  targetType:
+    assemblyQualifiedName: EntityStates.UrchinTurret.DeathState, RoR2, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  serializedFieldsCollection:
+    serializedFields:
+    - fieldName: initialExplosion
+      fieldValue:
+        stringValue:
+        objectValue: {fileID: 1458839741150558, guid: 9e32511d5cd51f5439a0b5aedc663812, type: 2}
+    - fieldName: effectScale
+      fieldValue:
+        stringValue: 3
+        objectValue: {fileID: 0}
+    - fieldName: deathString
+      fieldValue:
+        stringValue: Play_elite_antiHeal_turret_die
+        objectValue: {fileID: 0}

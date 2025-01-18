@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -585069481, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: edEarth
+  m_EditorClassIdentifier:
+  modifierToken: ELITE_MODIFIER_EARTH
+  eliteEquipmentDef: {fileID: 11400000, guid: 0b6ec88d762ea354ba3a0eb815debf77, type: 2}
+  color:
+    serializedVersion: 2
+    rgba: 4285916497
+  shaderEliteRampIndex: 6
+  healthBoostCoefficient: 3
+  damageBoostCoefficient: 2

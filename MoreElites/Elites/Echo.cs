@@ -34,28 +34,26 @@ namespace MoreElites
         public override void Init()
         {
             base.Init();
-
-            var orig = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
-
-            var customSummonItem = new CustomItem("EchoSummonItem",
-                this.CustomEquipmentDef.EquipmentDef.nameToken,
-                this.CustomEquipmentDef.EquipmentDef.descriptionToken,
-                this.CustomEquipmentDef.EquipmentDef.loreToken,
-                this.CustomEquipmentDef.EquipmentDef.pickupToken,
-                orig.pickupIconSprite,
-                orig.pickupModelPrefab,
-                orig.tier,
-                orig.tags,
-                orig.canRemove,
-                orig.hidden, null, null);
-
-            this.summonedEchoItem = customSummonItem.ItemDef;
-            ItemAPI.Add(customSummonItem);
+            /*
+            summonedEchoItem = ScriptableObject.CreateInstance<ItemDef>();
+            summonedEchoItem.deprecatedTier = ItemTier.NoTier;
+            summonedEchoItem.canRemove = false;
+            summonedEchoItem.hidden = true;
+            summonedEchoItem.nameToken = "ITEM_SUMMONED_ECHO_NAME";
+            summonedEchoItem.loreToken = "";
+            summonedEchoItem.descriptionToken = "";
+            summonedEchoItem.pickupToken = "";
+            summonedEchoItem.name = "SummonedEchoItem";
+            */
+            summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
+            ContentAddition.AddItemDef(summonedEchoItem);
 
             var celestineHalo = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/DisplayEliteStealthCrown.prefab").WaitForCompletion().InstantiateClone("EchoCrown");
             celestineHalo.AddComponent<NetworkIdentity>();
 
             this.CustomEquipmentDef.ItemDisplayRules = ItemDisplays.CreateItemDisplayRules(celestineHalo, EliteMaterial);
+
+            echoProjectile.GetComponent<ProjectileDirectionalTargetFinder>().lookRange = 120;
 
             RecalculateStatsAPI.GetStatCoefficients += ReduceSummonHP;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
@@ -76,19 +74,15 @@ namespace MoreElites
 
         private void ReduceSummonHP(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            var stack = sender.inventory ? sender.inventory.GetItemCount(summonedEchoItem) : 0;
-
-            if (stack > 0)
-                args.baseCurseAdd += Mathf.Pow(1 / 0.1f, stack) - 1;
+            if (sender.inventory && sender.inventory.GetItemCount(summonedEchoItem) > 0)
+                args.baseCurseAdd += 1f / 0.15f;
         }
 
         private void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
         {
             orig(self, body);
 
-            var stack = self.inventory ? self.inventory.GetItemCount(summonedEchoItem) : 0;
-
-            if (stack > 0)
+            if (self.inventory && self.inventory.GetItemCount(summonedEchoItem) > 0)
                 body.gameObject.AddComponent<CustomSummonedEchoBodyBehavior>();
         }
 

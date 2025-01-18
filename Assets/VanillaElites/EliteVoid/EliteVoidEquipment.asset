@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1512808244, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: EliteVoidEquipment
+  m_EditorClassIdentifier:
+  pickupModelPrefab: {fileID: 1126912102188456, guid: dbcb30cc580a4fc4a8151d20c5fcbae9, type: 2}
+  cooldown: 10
+  nameToken: EQUIPMENT_AFFIXVOID_NAME
+  pickupToken: EQUIPMENT_AFFIXVOID_PICKUP
+  descriptionToken: EQUIPMENT_AFFIXVOID_DESC
+  loreToken: EQUIPMENT_AFFIXVOID_LORE
+  isConsumed: 0
+  pickupIconSprite: {fileID: 21300000, guid: e563605ca665c064689f21f35f0c5633, type: 2}
+  unlockableDef: {fileID: 0}
+  colorIndex: 5
+  canDrop: 0
+  dropOnDeathChance: 0
+  canBeRandomlyTriggered: 0
+  enigmaCompatible: 0
+  isLunar: 0
+  isBoss: 0
+  passiveBuffDef: {fileID: 11400000, guid: 88e444e9ecc77aa41b46400229e48213, type: 2}
+  appearsInSinglePlayer: 1
+  appearsInMultiPlayer: 1
+  requiredExpansion: {fileID: 11400000, guid: e04f48bd9da3eff4e942f17691e6dcff, type: 2}
+  mageElement: 0

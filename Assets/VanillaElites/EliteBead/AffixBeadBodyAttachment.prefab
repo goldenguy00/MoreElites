@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1109044326994224
+GameObject:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Component:
+  - component: {fileID: 4218666815330761}
+  - component: {fileID: 114313108733153389}
+  - component: {fileID: 114186067644046615}
+  - component: {fileID: 114880059873885179}
+  - component: {fileID: 114358610432743194}
+  - component: {fileID: 114556058729154946}
+  - component: {fileID: 114738359987943207}
+  m_Layer: 0
+  m_Name: AffixBeadBodyAttachment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4218666815330761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109044326994224}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -37.30123, y: 14.901926, z: 10.221264}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -0, z: -0}
+--- !u!114 &114313108733153389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109044326994224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: d382a022563c7517aadbc92ca1060016, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 253
+    i1: 170
+    i2: 246
+    i3: 42
+    i4: 158
+    i5: 13
+    i6: 73
+    i7: 196
+    i8: 169
+    i9: 148
+    i10: 176
+    i11: 215
+    i12: 15
+    i13: 143
+    i14: 172
+    i15: 143
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1
+--- !u!114 &114186067644046615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109044326994224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1985007777, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  shouldParentToAttachedBody: 1
+  forceHostAuthority: 0
+--- !u!114 &114880059873885179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109044326994224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 181350367, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  maxAllies: 5
+  damageHitCountTotal: 10
+  cooldownAfterFiring: 10
+  offsetAboveCharacterBody: 3.5
+  initialCooldownBeforeInitializingAffix: 5
+  projectilePrefab: {fileID: 1521797303404703, guid: 80b27a3cd47540f4b9751ad0322f7b42, type: 2}
+  damageCoefficient: 1
+  force: 0
+  fireDelay: 2
+  modelPrefab: {fileID: 1881416502561896, guid: f877497440e779c44a187cbb0d4da7c6, type: 2}
+  crystalSpawnVFX: {fileID: 1478996016873739, guid: 029d9912d2ef88340b88b5d053a17502, type: 2}
+  spikeGrowthVFX: {fileID: 1957843398378613, guid: 57b78daf539813d4992afabecb5e8ac3, type: 2}
+  finalGrowthStepVFX: {fileID: 1667531321187100, guid: 307b701a8f77b204292ef5741852e32e, type: 2}
+  projectilePreLaunchVFX: {fileID: 1250171357533762, guid: f2a18604eea49f54182cd51a80b79bde, type: 2}
+  projectileLaunchVFX: {fileID: 1126121349676680, guid: c39e9816c4445754ab655939cb4e2554, type: 2}
+  targetHitVFX: {fileID: 1248483173220775, guid: 3cd17232440b4254c96ab9cc5b386205, type: 2}
+  tetherVFXOrigin: {fileID: 114358610432743194}
+  SpawnBeadLoopEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: 2dac52f5e52a8ba45b80d6ab7125148a, type: 2}
+  StopBeadLoopEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: f3724771c105e7f468cc513dff5b7147, type: 2}
+  IncrementBeadEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: b70f37e95b7a8234abbb75f6a681033b, type: 2}
+  damageCooldown: 0.1
+  lastAttacker: {fileID: 0}
+--- !u!114 &114358610432743194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109044326994224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -662483879, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  tetherPrefab: {fileID: 1336093268799149, guid: 966e3de9cdc39b94ca1e0ad54788d8a0, type: 2}
+--- !u!114 &114556058729154946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109044326994224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -440218388, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  radius: 35
+  includeCharacterRadius: 0
+  maxTargets: 5
+  tickRate: 1
+  filterByTeam: 2
+  targetMustBeAlive: 1
+  ignoreCharactersWithThisBuff: {fileID: 0}
+  IgnoreElites: 1
+--- !u!114 &114738359987943207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1109044326994224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1107465941, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  allyBuff: {fileID: 11400000, guid: 2095437853e8add4ab9128087a2e8509, type: 2}
