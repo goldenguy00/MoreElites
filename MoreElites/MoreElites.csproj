@@ -43,6 +43,9 @@
     <Reference Include="BlightedElites">
       <HintPath>..\..\..\..\SharedRef\BlightedElites.dll</HintPath>
     </Reference>
+    <Reference Include="EliteReworks">
+      <HintPath>..\..\..\..\SharedRef\EliteReworks.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

@@ -17,6 +17,7 @@ namespace MoreElites
             GuildedTier = 4,
             Tier2 = 5
         }
+
         internal static ConfigFile MEConfig;
 
         public static ConfigEntry<bool> enableEcho;
@@ -57,7 +58,7 @@ namespace MoreElites
             eliteTierEcho = MEConfig.BindOption(
                 "General",
                 "Elite Tier Echo",
-                ConfigTier.Tier2,
+                ConfigTier.GuildedTier,
                 "Sets the Elite Tier for the Echo Elite (Shadow Clone Elite). A good alt is GuildedTier (Stage 3 and later)");
 
             // volatile
@@ -69,7 +70,7 @@ namespace MoreElites
             eliteTierVolatile = MEConfig.BindOption(
                 "General",
                 "Elite Tier Volatile",
-                ConfigTier.Tier1,
+                ConfigTier.GuildedTier,
                 "Sets the Elite Tier for the Volatile Elite (RoR1 Missile Elite). A good alt is GuidedTier (Stage 3 and later)");
 
             // empowering
@@ -95,7 +96,6 @@ namespace MoreElites
                 "Elite Tier Frenzied",
                 ConfigTier.Tier1,
                 "Sets the Elite Tier for the Frenzied Elite (RoR1 Elite)");
-
 
             // t1
             t1HealthMult = MEConfig.BindOptionSlider(

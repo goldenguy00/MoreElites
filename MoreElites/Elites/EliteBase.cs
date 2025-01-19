@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using R2API;
 using RoR2;
 using UnityEngine;
@@ -191,8 +192,8 @@ namespace MoreElites
                 return;
 
             this.CustomEliteDef = new CustomElite($"Elite{this.Name}", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", tierDefs, this.EliteRamp);
-            this.CustomEliteDef.EliteDef.healthBoostCoefficient = this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
-            this.CustomEliteDef.EliteDef.damageBoostCoefficient = this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
+            this.CustomEliteDef.EliteDef.healthBoostCoefficient = GetHealthBoostCoefficient();
+            this.CustomEliteDef.EliteDef.damageBoostCoefficient = GetDamageBoostCoefficient();
 
             this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
 
@@ -200,9 +201,33 @@ namespace MoreElites
             if (honorTierDefs is not null)
             {
                 this.CustomEliteDefHonor = new CustomElite($"Elite{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);
-                this.CustomEliteDefHonor.EliteDef.healthBoostCoefficient = PluginConfig.t1HonorHealthMult.Value;
-                this.CustomEliteDefHonor.EliteDef.damageBoostCoefficient = PluginConfig.t1HonorDamageMult.Value;
+                this.CustomEliteDefHonor.EliteDef.healthBoostCoefficient = GetHealthBoostCoefficient(true);
+                this.CustomEliteDefHonor.EliteDef.damageBoostCoefficient = GetDamageBoostCoefficient(true);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private float GetHealthBoostCoefficient(bool honor = false)
+        {
+            if (MoreElites.ReworksInstalled)
+                return MoreElites.GetHealthBoostCoefficient(this.EliteTierDef, honor);
+
+            if (honor)
+                return PluginConfig.t1HonorHealthMult.Value;
+
+            return this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private float GetDamageBoostCoefficient(bool honor = false)
+        {
+            if (MoreElites.ReworksInstalled)
+                return MoreElites.GetDamageBoostCoefficient(this.EliteTierDef, honor);
+
+            if (honor)
+                return PluginConfig.t1HonorDamageMult.Value;
+
+            return this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
         }
 
         // 0 - none
