@@ -3,7 +3,7 @@ using System.Security;
 using System.Security.Permissions;
 using BepInEx;
 using BepInEx.Bootstrap;
-using static MoreElites.EliteBase;
+using RoR2;
 
 [module: UnverifiableCode]
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -13,21 +13,18 @@ using static MoreElites.EliteBase;
 namespace MoreElites
 {
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.Moffein.BlightedElites", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.Moffein.EliteReworks", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     public class MoreElites : BaseUnityPlugin
     {
         public const string PluginGUID = $"com.{PluginAuthor}.{PluginName}";
         public const string PluginAuthor = "Nuxlar";
         public const string PluginName = "MoreElites";
-        public const string PluginVersion = "1.1.5";
+        public const string PluginVersion = "1.1.7";
 
         public static MoreElites Instance { get; private set; }
 
         public static bool RooInstalled => Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
         public static bool BlightedInstalled => Chainloader.PluginInfos.ContainsKey("com.Moffein.BlightedElites");
-        public static bool ReworksInstalled => Chainloader.PluginInfos.ContainsKey("com.Moffein.EliteReworks");
 
         public void Awake()
         {
@@ -38,13 +35,18 @@ namespace MoreElites
 
             EliteBase.CreateElites();
 
-            if (BlightedInstalled)
-                AddBlightedCompat();
-                
+            RoR2Application.onLoad += AddBlightedCompat;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void AddBlightedCompat()
+        {
+            if (BlightedInstalled)
+                AddEliteTypes();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private static void AddEliteTypes()
         {
             foreach (var elite in EliteBase.EliteInstances)
             {
@@ -56,10 +58,10 @@ namespace MoreElites
                             break;
                         case EliteBase.EliteTier.T1:
                         case EliteBase.EliteTier.T1Guilded:
-                            BlightedElites.Components.AffixBlightedComponent.tier1Affixes.Add(elite.CustomEliteDef.EliteDef);
+                            AddT1(elite.CustomEliteDef.EliteDef);
                             break;
                         case EliteBase.EliteTier.T2:
-                            BlightedElites.Components.AffixBlightedComponent.tier2Affixes.Add(elite.CustomEliteDef.EliteDef);
+                            AddT2(elite.CustomEliteDef.EliteDef);
                             break;
                     }
                 }
@@ -67,21 +69,15 @@ namespace MoreElites
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        internal static float GetHealthBoostCoefficient(EliteBase.EliteTier tier, bool honor = false)
+        private static void AddT1(EliteDef eliteDef)
         {
-            if (honor)
-                return EliteReworks.Tweaks.ModifyEliteTiers.t1HonorHealth;
-
-            return tier < EliteTier.T2 ? EliteReworks.Tweaks.ModifyEliteTiers.t1Health : EliteReworks.Tweaks.ModifyEliteTiers.t2Health;
+            BlightedElites.Components.AffixBlightedComponent.tier1Affixes.Add(eliteDef);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        internal static float GetDamageBoostCoefficient(EliteBase.EliteTier tier, bool honor = false)
+        private static void AddT2(EliteDef eliteDef)
         {
-            if (honor)
-                return EliteReworks.Tweaks.ModifyEliteTiers.t1HonorDamage;
-
-            return tier < EliteTier.T2 ? EliteReworks.Tweaks.ModifyEliteTiers.t1Damage : EliteReworks.Tweaks.ModifyEliteTiers.t2Damage;
+            BlightedElites.Components.AffixBlightedComponent.tier2Affixes.Add(eliteDef);
         }
     }
 }

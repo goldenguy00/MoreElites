@@ -209,8 +209,8 @@ namespace MoreElites
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private float GetHealthBoostCoefficient(bool honor = false)
         {
-            if (MoreElites.ReworksInstalled)
-                return MoreElites.GetHealthBoostCoefficient(this.EliteTierDef, honor);
+            //if (MoreElites.ReworksInstalled)
+            //    return MoreElites.GetHealthBoostCoefficient(this.EliteTierDef, honor);
 
             if (honor)
                 return PluginConfig.t1HonorHealthMult.Value;
@@ -221,8 +221,8 @@ namespace MoreElites
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private float GetDamageBoostCoefficient(bool honor = false)
         {
-            if (MoreElites.ReworksInstalled)
-                return MoreElites.GetDamageBoostCoefficient(this.EliteTierDef, honor);
+            //if (MoreElites.ReworksInstalled)
+            //    return MoreElites.GetDamageBoostCoefficient(this.EliteTierDef, honor);
 
             if (honor)
                 return PluginConfig.t1HonorDamageMult.Value;
