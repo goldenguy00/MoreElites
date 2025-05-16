@@ -19,7 +19,7 @@ namespace MoreElites
         public const string PluginGUID = $"com.{PluginAuthor}.{PluginName}";
         public const string PluginAuthor = "Nuxlar";
         public const string PluginName = "MoreElites";
-        public const string PluginVersion = "1.1.7";
+        public const string PluginVersion = "1.2.0";
 
         public static MoreElites Instance { get; private set; }
 
@@ -32,6 +32,15 @@ namespace MoreElites
 
             Log.Init(Logger);
             PluginConfig.Init();
+
+            if (PluginConfig.enableEcho.Value)
+                new Echo();
+            if (PluginConfig.enableEmpowering.Value)
+                new Empowering();
+            if (PluginConfig.enableFrenzied.Value)
+                new Frenzied();
+            if (PluginConfig.enableVolatile.Value)
+                new Volatile();
 
             EliteBase.CreateElites();
 

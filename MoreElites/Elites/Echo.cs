@@ -2,10 +2,12 @@ using R2API;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Navigation;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using RoR2.Items;
 
 namespace MoreElites
 {
@@ -13,7 +15,6 @@ namespace MoreElites
     {
         public ItemDef summonedEchoItem;
         public Material echoMatBlack = Addressables.LoadAssetAsync<Material>("RoR2/InDev/matEcho.mat").WaitForCompletion();
-        public GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/InDev/EchoHunterProjectile.prefab").WaitForCompletion().InstantiateClone("EchoHunterProjectile");
 
         public override string Name => "Echo";
         public override string EquipmentName => "Echo Aspect";
@@ -23,27 +24,24 @@ namespace MoreElites
 
         public override EliteTier EliteTierDef => (EliteTier)PluginConfig.eliteTierEcho.Value;
         public override Color EliteColor => Color.black;
-        public override Texture2D EliteRamp => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampShadowClone.png").WaitForCompletion();
-        public override Sprite EliteIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
-        public override Sprite AspectIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
 
+        public override Texture2D EliteRamp { get; set; } = EliteRampGenerator.CreateGradientTexture([
+            new Color32(23, 22, 20, 255),
+            new Color32(117, 64, 67, 255),
+            new Color32(154, 136, 115, 255),
+            new Color32(55, 66, 61, 255),
+            new Color32(58, 38, 24, 255),
+        ], 256, 8);
+
+        public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
+        public override Sprite AspectIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
         public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/voidoutro/matVoidRaidCrabEyeOverlay1BLUE.mat").WaitForCompletion();
         public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion().InstantiateClone("PickupAffixEcho", false);
 
         public override void Init()
         {
             base.Init();
-            /*
-            summonedEchoItem = ScriptableObject.CreateInstance<ItemDef>();
-            summonedEchoItem.deprecatedTier = ItemTier.NoTier;
-            summonedEchoItem.canRemove = false;
-            summonedEchoItem.hidden = true;
-            summonedEchoItem.nameToken = "ITEM_SUMMONED_ECHO_NAME";
-            summonedEchoItem.loreToken = "";
-            summonedEchoItem.descriptionToken = "";
-            summonedEchoItem.pickupToken = "";
-            summonedEchoItem.name = "SummonedEchoItem";
-            */
+
             summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
             ContentAddition.AddItemDef(summonedEchoItem);
 
@@ -52,23 +50,26 @@ namespace MoreElites
 
             this.CustomEquipmentDef.ItemDisplayRules = ItemDisplays.CreateItemDisplayRules(celestineHalo, EliteMaterial);
 
-            echoProjectile.GetComponent<ProjectileDirectionalTargetFinder>().lookRange = 120;
-
             RecalculateStatsAPI.GetStatCoefficients += ReduceSummonHP;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
             On.RoR2.CharacterModel.UpdateOverlays += CharacterModel_UpdateOverlays;
+            On.RoR2.CharacterBody.AffixEchoBehavior.OnEnable += AffixEchoBehavior_OnEnable;
         }
 
-        public override void OnBuffGained(CharacterBody self)
+        private void AffixEchoBehavior_OnEnable(On.RoR2.CharacterBody.AffixEchoBehavior.orig_OnEnable orig, CharacterBody.AffixEchoBehavior self)
         {
-            if (NetworkServer.active)
-                self.AddItemBehavior<CustomAffixEchoBehavior>(1);
-        }
-
-        public override void OnBuffLost(CharacterBody self)
-        {
-            if (NetworkServer.active)
-                self.AddItemBehavior<CustomAffixEchoBehavior>(0);
+            var itemCount = self.body.inventory ? self.body.inventory.GetItemCount(summonedEchoItem) : 0;
+            if (itemCount > 0)
+            {
+                self.enabled = false;
+                MonoBehaviour.Destroy(self);
+                return;
+            }
+            else
+            {
+                orig(self);
+                Util.PlaySound("Play_voidRaid_fog_explode", self.gameObject);
+            }
         }
 
         private void ReduceSummonHP(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
@@ -81,7 +82,8 @@ namespace MoreElites
         {
             orig(self, body);
 
-            if (self.inventory && self.inventory.GetItemCount(summonedEchoItem) > 0)
+            var itemCount = self.inventory ? self.inventory.GetItemCount(summonedEchoItem) : 0;
+            if (itemCount > 0 && !body.GetComponent<CustomSummonedEchoBodyBehavior>())
                 body.gameObject.AddComponent<CustomSummonedEchoBodyBehavior>();
         }
 
@@ -102,119 +104,12 @@ namespace MoreElites
             }
         }
 
-        public class CustomAffixEchoBehavior : CharacterBody.ItemBehavior
+        public class CustomSummonedEchoBodyBehavior : SummonedEchoBodyBehavior
         {
-            public DeployableMinionSpawner echoSpawner1;
-            public DeployableMinionSpawner echoSpawner2;
-
-            public CharacterSpawnCard spawnCard;
-
-            public List<CharacterMaster> spawnedEchoes = new List<CharacterMaster>();
-
-            public bool hasEverSpawned;
-
-            public void FixedUpdate()
-            {
-                spawnCard.nodeGraphType = body.isFlying ? MapNodeGroup.GraphType.Air : MapNodeGroup.GraphType.Ground;
-
-                if (!hasEverSpawned)
-                {
-                    echoSpawner1.respawnStopwatch++;
-                    echoSpawner2.respawnStopwatch++;
-                }
-            }
-
-            public void Awake()
-            {
-                enabled = false;
-                Util.PlaySound("Play_voidRaid_fog_explode", this.gameObject);
-            }
-
-            public void OnEnable()
-            {
-                var masterIndex = MasterCatalog.FindAiMasterIndexForBody(body.bodyIndex);
-                spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
-                spawnCard.prefab = MasterCatalog.GetMasterPrefab(masterIndex);
-                spawnCard.inventoryToCopy = body.inventory;
-                spawnCard.equipmentToGrant = new EquipmentDef[1];
-                spawnCard.itemsToGrant =
-                [
-                    new ItemCountPair
-                    {
-                        itemDef = Instance.summonedEchoItem,
-                        count = 1
-                    }
-                ];
-                CreateSpawners();
-            }
-
-            public void OnDisable()
-            {
-                Destroy(spawnCard);
-                spawnCard = null;
-                for (var num = spawnedEchoes.Count - 1; num >= 0; num--)
-                {
-                    if (spawnedEchoes[num])
-                        spawnedEchoes[num].TrueKill();
-                }
-
-                DestroySpawners();
-            }
-
-            public void CreateSpawners()
-            {
-                var rng = new Xoroshiro128Plus(Run.instance.seed ^ (ulong)GetInstanceID());
-                CreateSpawner(ref echoSpawner1, DeployableSlot.RoboBallRedBuddy, spawnCard);
-                CreateSpawner(ref echoSpawner2, DeployableSlot.RoboBallGreenBuddy, spawnCard);
-                void CreateSpawner(ref DeployableMinionSpawner buddySpawner, DeployableSlot deployableSlot, SpawnCard spawnCard)
-                {
-                    buddySpawner = new DeployableMinionSpawner(body.master, deployableSlot, rng)
-                    {
-                        maxSpawnDistance = 20f,
-                        respawnInterval = 30f,
-                        spawnCard = spawnCard
-                    };
-                    buddySpawner.onMinionSpawnedServer += OnMinionSpawnedServer;
-                }
-            }
-
-            public void DestroySpawners()
-            {
-                echoSpawner1?.Dispose();
-                echoSpawner1 = null;
-                echoSpawner2?.Dispose();
-                echoSpawner2 = null;
-            }
-
-            public void OnMinionSpawnedServer(SpawnCard.SpawnResult spawnResult)
-            {
-                var spawnedInstance = spawnResult.spawnedInstance;
-                if (!spawnedInstance)
-                    return;
-
-                var spawnedMaster = spawnedInstance.GetComponent<CharacterMaster>();
-                if (spawnedMaster)
-                {
-                    hasEverSpawned = true;
-                    spawnedEchoes.Add(spawnedMaster);
-                    OnDestroyCallback.AddCallback(spawnedMaster.gameObject, delegate
-                    {
-                        spawnedEchoes.Remove(spawnedMaster);
-                    });
-                }
-            }
-        }
-
-        public class CustomSummonedEchoBodyBehavior : MonoBehaviour
-        {
-            private static float fireInterval = 3f;
             private static float normalBaseDamage = 24f;
             private static float normalLevelDamage = 4.8f;
             private static float championBaseDamage = 32f;
             private static float championLevelDamage = 7.2f;
-
-            private float fireTimer;
-            private CharacterBody body;
 
             private void OnEnable()
             {

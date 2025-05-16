@@ -55,11 +55,11 @@ namespace MoreElites
                 "Enable Echo",
                 true,
                 "Should enable the Echo Elite (Shadow Clone Elite)");
-            eliteTierEcho = MEConfig.BindOption(
+            eliteTierEcho = MEConfig.BindOptionEnum(
                 "General",
                 "Elite Tier Echo",
                 ConfigTier.GuildedTier,
-                "Sets the Elite Tier for the Echo Elite (Shadow Clone Elite). A good alt is GuildedTier (Stage 3 and later)");
+                "Sets the Elite Tier for the Echo Elite (Shadow Clone Elite). A good alt is GuildedTier (Stage 3 and later) or T2 (post-loop)");
 
             // volatile
             enableVolatile = MEConfig.BindOption(
@@ -67,7 +67,7 @@ namespace MoreElites
                 "Enable Volatile",
                 true,
                 "Should enable the Volatile Elite (RoR1 Missile Elite)");
-            eliteTierVolatile = MEConfig.BindOption(
+            eliteTierVolatile = MEConfig.BindOptionEnum(
                 "General",
                 "Elite Tier Volatile",
                 ConfigTier.GuildedTier,
@@ -79,7 +79,7 @@ namespace MoreElites
                 "Enable Empowering",
                 true,
                 "Should enable the Empowering Elite (Warbanner Elite)");
-            eliteTierEmpowering = MEConfig.BindOption(
+            eliteTierEmpowering = MEConfig.BindOptionEnum(
                 "General",
                 "Elite Tier Empowering",
                 ConfigTier.Tier1,
@@ -91,7 +91,7 @@ namespace MoreElites
                 "Enable Frenzied",
                 true,
                 "Should enable the Frenzied Elite (RoR1 Elite)");
-            eliteTierFrenzied = MEConfig.BindOption(
+            eliteTierFrenzied = MEConfig.BindOptionEnum(
                 "General",
                 "Elite Tier Frenzied",
                 ConfigTier.Tier1,
@@ -102,13 +102,13 @@ namespace MoreElites
                 "Stats",
                 "T1 Health Multiplier",
                 4f,
-                "Vanilla T1 is 4. A good alt is 3. Does not affect vanilla T1s.",
+                "Vanilla T1 is 4. A good alt is 3. Does not affect vanilla T1s. Ignored if elite reworks is installed.",
                 1f, 10f);
             t1DamageMult = MEConfig.BindOptionSlider(
                 "Stats",
                 "T1 Damage Multiplier",
                 2f,
-                "Vanilla T1 is 2. A good alt is 1.5. Does not affect vanilla T1s.",
+                "Vanilla T1 is 2. A good alt is 1.5. Does not affect vanilla T1s. Ignored if elite reworks is installed.",
                 1f, 10f);
 
             // t1 honor
@@ -116,13 +116,13 @@ namespace MoreElites
                 "Stats",
                 "T1 Honor Health Multiplier",
                 2.5f,
-                "Vanilla T1 is 2.5. Does not affect vanilla T1s.",
+                "Vanilla T1 is 2.5. Does not affect vanilla T1s. Ignored if elite reworks is installed.",
                 1f, 10f);
             t1HonorDamageMult = MEConfig.BindOptionSlider(
                 "Stats", 
                 "T1 Honor Damage Multiplier",
-                1.5f, 
-                "Vanilla T1 is 1.5. Does not affect vanilla T1s.",
+                1.5f,
+                "Vanilla T1 is 1.5. Does not affect vanilla T1s. Ignored if elite reworks is installed.",
                 1f, 10f);
 
             // t2
@@ -130,13 +130,13 @@ namespace MoreElites
                 "Stats",
                 "T2 Health Multiplier",
                 18f,
-                "Vanilla T2 is 18. A good alt is 12. Does not affect vanilla T2s.",
+                "Vanilla T2 is 18. A good alt is 12. Does not affect vanilla T2s. Ignored if elite reworks is installed.",
                 1f, 30f);
             t2DamageMult = MEConfig.BindOptionSlider(
                 "Stats",
                 "T2 Damage Multiplier",
                 6f,
-                "Vanilla T2 is 6. A good alt is 3.5. Does not affect vanilla T2s.",
+                "Vanilla T2 is 6. A good alt is 3.5. Does not affect vanilla T2s. Ignored if elite reworks is installed.",
                 1f, 10f);
 
             WipeConfig();
@@ -157,7 +157,7 @@ namespace MoreElites
         {
             try
             {
-                RiskOfOptions.ModSettingsManager.SetModDescription("Combat Director Tweaks and Elite Stacking", MoreElites.PluginGUID, MoreElites.PluginName);
+                RiskOfOptions.ModSettingsManager.SetModDescription("More Elites", MoreElites.PluginGUID, MoreElites.PluginName);
 
                 var iconStream = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(MoreElites.Instance.Info.Location), "icon.png"));
                 var tex = new Texture2D(256, 256);
@@ -171,16 +171,12 @@ namespace MoreElites
                 Log.Debug(e);
             }
         }
+
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public static ConfigEntry<T> BindOption<T>(this ConfigFile myConfig, string section, string name, T defaultValue, string description = "", bool restartRequired = true)
         {
-            if (defaultValue is int or float && !typeof(T).IsEnum)
+            if (defaultValue is int or float)
             {
-#if DEBUG
-                Log.Warning($"Config entry {name} in section {section} is a numeric {typeof(T).Name} type, " +
-                    $"but has been registered without using {nameof(BindOptionSlider)}. " +
-                    $"Lower and upper bounds will be set to the defaults [0, 20]. Was this intentional?");
-#endif
                 return myConfig.BindOptionSlider(section, name, defaultValue, description, 0, 20, restartRequired);
             }
             if (string.IsNullOrEmpty(description))
@@ -190,7 +186,24 @@ namespace MoreElites
                 description += " (restart required)";
 
             var configEntry = myConfig.Bind(section, name, defaultValue, new ConfigDescription(description, null));
-            
+
+            if (MoreElites.RooInstalled)
+                TryRegisterOption(configEntry, restartRequired);
+
+            return configEntry;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static ConfigEntry<ConfigTier> BindOptionEnum(this ConfigFile myConfig, string section, string name, ConfigTier defaultValue, string description = "", bool restartRequired = true)
+        {
+            if (string.IsNullOrEmpty(description))
+                description = name;
+
+            if (restartRequired)
+                description += " (restart required)";
+
+            var configEntry = myConfig.Bind(section, name, defaultValue, new ConfigDescription(description, new AcceptableValueRange<ConfigTier>(ConfigTier.Tier1, ConfigTier.Tier2)));
+
             if (MoreElites.RooInstalled)
                 TryRegisterOption(configEntry, restartRequired);
 
@@ -200,12 +213,8 @@ namespace MoreElites
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public static ConfigEntry<T> BindOptionSlider<T>(this ConfigFile myConfig, string section, string name, T defaultValue, string description = "", float min = 0, float max = 20, bool restartRequired = true)
         {
-            if (defaultValue is not int and not float || typeof(T).IsEnum)
+            if (defaultValue is not int and not float)
             {
-#if DEBUG
-                Log.Warning($"Config entry {name} in section {section} is a not a numeric {typeof(T).Name} type, " +
-                    $"but has been registered as a slider option using {nameof(BindOptionSlider)}. Was this intentional?");
-#endif
                 return myConfig.BindOption(section, name, defaultValue, description, restartRequired);
             }
 
@@ -259,19 +268,19 @@ namespace MoreElites
                 {
                     submitOn = RiskOfOptions.OptionConfigs.InputFieldConfig.SubmitEnum.OnExitOrSubmit,
                     restartRequired = restartRequired
-                }));
+                }), MoreElites.PluginGUID, MoreElites.PluginName);
             }
             else if (entry is ConfigEntry<bool> boolEntry)
             {
-                RiskOfOptions.ModSettingsManager.AddOption(new RiskOfOptions.Options.CheckBoxOption(boolEntry, restartRequired));
+                RiskOfOptions.ModSettingsManager.AddOption(new RiskOfOptions.Options.CheckBoxOption(boolEntry, restartRequired), MoreElites.PluginGUID, MoreElites.PluginName);
             }
             else if (entry is ConfigEntry<KeyboardShortcut> shortCutEntry)
             {
-                RiskOfOptions.ModSettingsManager.AddOption(new RiskOfOptions.Options.KeyBindOption(shortCutEntry, restartRequired));
+                RiskOfOptions.ModSettingsManager.AddOption(new RiskOfOptions.Options.KeyBindOption(shortCutEntry, restartRequired), MoreElites.PluginGUID, MoreElites.PluginName);
             }
             else if (typeof(T).IsEnum)
             {
-                RiskOfOptions.ModSettingsManager.AddOption(new RiskOfOptions.Options.ChoiceOption(entry, restartRequired));
+                RiskOfOptions.ModSettingsManager.AddOption(new RiskOfOptions.Options.ChoiceOption(entry, restartRequired), MoreElites.PluginGUID, MoreElites.PluginName);
             }
             else
             {
@@ -293,7 +302,7 @@ namespace MoreElites
                     max = (int)max,
                     formatString = "{0:0.00}",
                     restartRequired = restartRequired
-                }));
+                }), MoreElites.PluginGUID, MoreElites.PluginName);
             }
             else if (entry is ConfigEntry<float> floatEntry)
             {
@@ -303,7 +312,7 @@ namespace MoreElites
                     max = max,
                     FormatString = "{0:0.00}",
                     restartRequired = restartRequired
-                }));
+                }), MoreElites.PluginGUID, MoreElites.PluginName);
             }
             else
             {
@@ -326,7 +335,7 @@ namespace MoreElites
                     max = max,
                     FormatString = "{0:0.00}",
                     restartRequired = restartRequired
-                }));
+                }), MoreElites.PluginGUID, MoreElites.PluginName);
             }
             else
             {

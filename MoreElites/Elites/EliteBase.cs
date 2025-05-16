@@ -47,9 +47,9 @@ namespace MoreElites
 
         public abstract EliteTier EliteTierDef { get; }
         public abstract Color EliteColor { get; }
-        public abstract Texture2D EliteRamp { get; }
-        public abstract Sprite EliteIcon { get; }
-        public abstract Sprite AspectIcon { get; }
+        public abstract Texture2D EliteRamp { get; set; }
+        public abstract Sprite EliteIcon { get; set; }
+        public abstract Sprite AspectIcon { get; set; }
 
         public abstract Material EliteMaterial { get; set; }
         public abstract GameObject PickupModelPrefab { get; set; }
@@ -59,20 +59,14 @@ namespace MoreElites
         public virtual CustomElite CustomEliteDef { get; set; }
         public virtual CustomElite CustomEliteDefHonor { get; set; }
 
+        private float HealthBoostCoefficient => this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
+        private float DamageBoostCoefficient => this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
+
         public abstract void OnBuffGained(CharacterBody body);
         public abstract void OnBuffLost(CharacterBody body);
 
         public static void CreateElites()
         {
-            if (PluginConfig.enableEcho.Value)
-                new Echo();
-            if (PluginConfig.enableEmpowering.Value)
-                new Empowering();
-            if (PluginConfig.enableFrenzied.Value)
-                new Frenzied();
-            if (PluginConfig.enableVolatile.Value)
-                new Volatile();
-
             if (EliteInstances.Any())
             {
                 foreach (var elite in EliteBase.EliteInstances)
@@ -192,8 +186,8 @@ namespace MoreElites
                 return;
 
             this.CustomEliteDef = new CustomElite($"Elite{this.Name}", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", tierDefs, this.EliteRamp);
-            this.CustomEliteDef.EliteDef.healthBoostCoefficient = GetHealthBoostCoefficient();
-            this.CustomEliteDef.EliteDef.damageBoostCoefficient = GetDamageBoostCoefficient();
+            this.CustomEliteDef.EliteDef.healthBoostCoefficient = this.HealthBoostCoefficient;
+            this.CustomEliteDef.EliteDef.damageBoostCoefficient = this.DamageBoostCoefficient;
 
             this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
 
@@ -201,33 +195,9 @@ namespace MoreElites
             if (honorTierDefs is not null)
             {
                 this.CustomEliteDefHonor = new CustomElite($"Elite{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);
-                this.CustomEliteDefHonor.EliteDef.healthBoostCoefficient = GetHealthBoostCoefficient(true);
-                this.CustomEliteDefHonor.EliteDef.damageBoostCoefficient = GetDamageBoostCoefficient(true);
+                this.CustomEliteDefHonor.EliteDef.healthBoostCoefficient = PluginConfig.t1HonorHealthMult.Value;
+                this.CustomEliteDefHonor.EliteDef.damageBoostCoefficient = PluginConfig.t1HonorDamageMult.Value;
             }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private float GetHealthBoostCoefficient(bool honor = false)
-        {
-            //if (MoreElites.ReworksInstalled)
-            //    return MoreElites.GetHealthBoostCoefficient(this.EliteTierDef, honor);
-
-            if (honor)
-                return PluginConfig.t1HonorHealthMult.Value;
-
-            return this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private float GetDamageBoostCoefficient(bool honor = false)
-        {
-            //if (MoreElites.ReworksInstalled)
-            //    return MoreElites.GetDamageBoostCoefficient(this.EliteTierDef, honor);
-
-            if (honor)
-                return PluginConfig.t1HonorDamageMult.Value;
-
-            return this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
         }
 
         // 0 - none
