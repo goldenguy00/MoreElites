@@ -1,12 +1,9 @@
 using R2API;
 using RoR2;
 using RoR2.Projectile;
-using RoR2.Navigation;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using RoR2.Items;
 
 namespace MoreElites
@@ -54,6 +51,24 @@ namespace MoreElites
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
             On.RoR2.CharacterModel.UpdateOverlays += CharacterModel_UpdateOverlays;
             On.RoR2.CharacterBody.AffixEchoBehavior.OnEnable += AffixEchoBehavior_OnEnable;
+            On.RoR2.CharacterBody.AffixEchoBehavior.OnDisable += AffixEchoBehavior_OnDisable;
+        }
+
+        private void AffixEchoBehavior_OnDisable(On.RoR2.CharacterBody.AffixEchoBehavior.orig_OnDisable orig, CharacterBody.AffixEchoBehavior self)
+        {
+            if (self.spawnCard)
+                UnityEngine.Object.Destroy(self.spawnCard);
+            self.spawnCard = null;
+
+            for (int num = self.spawnedEchoes.Count - 1; num >= 0; num--)
+            {
+                if (self.spawnedEchoes[num])
+                {
+                    self.spawnedEchoes[num].TrueKill();
+                }
+            }
+
+            self.DestroySpawners();
         }
 
         private void AffixEchoBehavior_OnEnable(On.RoR2.CharacterBody.AffixEchoBehavior.orig_OnEnable orig, CharacterBody.AffixEchoBehavior self)
@@ -63,7 +78,6 @@ namespace MoreElites
             {
                 self.enabled = false;
                 MonoBehaviour.Destroy(self);
-                return;
             }
             else
             {
@@ -104,6 +118,18 @@ namespace MoreElites
             }
         }
 
+        public override void OnBuffGained(CharacterBody self)
+        {
+            if (NetworkServer.active)
+                self.AddItemBehavior<CharacterBody.AffixEchoBehavior>(1);
+        }
+
+        public override void OnBuffLost(CharacterBody self)
+        {
+            if (NetworkServer.active)
+                self.AddItemBehavior<CharacterBody.AffixEchoBehavior>(0);
+        }
+
         public class CustomSummonedEchoBodyBehavior : SummonedEchoBodyBehavior
         {
             private static float normalBaseDamage = 24f;
@@ -111,12 +137,7 @@ namespace MoreElites
             private static float championBaseDamage = 32f;
             private static float championLevelDamage = 7.2f;
 
-            private void OnEnable()
-            {
-                this.body = this.GetComponent<CharacterBody>();
-            }
-
-            private void FixedUpdate()
+            private new void FixedUpdate()
             {
                 if (!(this.body && this.body.healthComponent && this.body.healthComponent.alive))
                     return;
@@ -127,8 +148,8 @@ namespace MoreElites
                     this.fireTimer = 0;
 
                     var damage = this.body.isChampion
-                        ? championBaseDamage + championLevelDamage * this.body.level
-                        : normalBaseDamage + normalLevelDamage * this.body.level;
+                        ? championBaseDamage + (championLevelDamage * this.body.level)
+                        : normalBaseDamage + (normalLevelDamage * this.body.level);
 
                     ProjectileManager.instance.FireProjectile(new FireProjectileInfo()
                     {
@@ -140,7 +161,7 @@ namespace MoreElites
                         position = this.body.aimOrigin,
                         rotation = Quaternion.LookRotation(Vector3.up),
                         procChainMask = default,
-                        projectilePrefab = Instance.echoProjectile,
+                        projectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/EchoHunterProjectile"),
                         force = 400f,
                         target = null
                     });

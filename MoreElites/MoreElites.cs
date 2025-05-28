@@ -59,7 +59,7 @@ namespace MoreElites
         {
             foreach (var elite in EliteBase.EliteInstances)
             {
-                if (elite?.CustomEliteDef?.EliteDef)
+                if (elite?.CustomEliteDef?.EliteDef && elite.CustomEliteDef != Echo.Instance.CustomEliteDef)
                 {
                     switch (elite.EliteTierDef)
                     {

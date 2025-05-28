@@ -61,7 +61,7 @@ namespace MoreElites
 
                 if (body.HasBuff(eliteBuff))
                 {
-                    float radius = 4 * damageInfo.procCoefficient;
+                    float radius = 2f * damageInfo.procCoefficient;
 
                     EffectManager.SpawnEffect(behemoExplosion, new EffectData()
                     {
@@ -73,7 +73,7 @@ namespace MoreElites
                     new BlastAttack
                     {
                         position = damageInfo.position,
-                        baseDamage = Util.OnHitProcDamage(damageInfo.damage, body.damage, 0.25f),
+                        baseDamage = Util.OnHitProcDamage(damageInfo.damage, body.damage, 0.15f),
                         baseForce = 0f,
                         radius = radius,
                         attacker = damageInfo.attacker,
@@ -113,8 +113,8 @@ namespace MoreElites
                     fireInterval = Random.Range(1, 6);
 
                     var damage = this.body.isChampion
-                        ? championBaseDamage + championLevelDamage * this.body.level
-                        : normalBaseDamage + normalLevelDamage * this.body.level;
+                        ? championBaseDamage + (championLevelDamage * this.body.level)
+                        : normalBaseDamage + (normalLevelDamage * this.body.level);
 
                     MissileUtils.FireMissile(this.body.corePosition, this.body, default, null, damage, Util.CheckRoll(this.body.crit, this.body.master), Instance.VolatileProjectile, DamageColorIndex.Item, false);
                 }
