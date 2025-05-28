@@ -5,13 +5,17 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using RoR2.Items;
+using System.Collections.Generic;
+using RoR2.Navigation;
 
 namespace MoreElites
 {
     public class Echo : EliteBase<Echo>
     {
         public ItemDef summonedEchoItem;
-        public Material echoMatBlack = Addressables.LoadAssetAsync<Material>("RoR2/InDev/matEcho.mat").WaitForCompletion();
+        public Material echoMatBlack;
+        public DeployableSlot deployableSlot;
+        public GameObject echoProjectile;
 
         public override string Name => "Echo";
         public override string EquipmentName => "Echo Aspect";
@@ -39,7 +43,11 @@ namespace MoreElites
         {
             base.Init();
 
+            echoProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/InDev/EchoHunterProjectile.prefab").WaitForCompletion().InstantiateClone("EchoHunterProjectile");
+            echoProjectile.GetComponent<ProjectileDirectionalTargetFinder>().lookRange = 120;
+
             summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
+            echoMatBlack = Addressables.LoadAssetAsync<Material>("RoR2/InDev/matEcho.mat").WaitForCompletion();
             ContentAddition.AddItemDef(summonedEchoItem);
 
             var celestineHalo = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/DisplayEliteStealthCrown.prefab").WaitForCompletion().InstantiateClone("EchoCrown");
@@ -47,48 +55,28 @@ namespace MoreElites
 
             this.CustomEquipmentDef.ItemDisplayRules = ItemDisplays.CreateItemDisplayRules(celestineHalo, EliteMaterial);
 
+            deployableSlot = DeployableAPI.RegisterDeployableSlot((_, _) => 2);
+
             RecalculateStatsAPI.GetStatCoefficients += ReduceSummonHP;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
             On.RoR2.CharacterModel.UpdateOverlays += CharacterModel_UpdateOverlays;
-            On.RoR2.CharacterBody.AffixEchoBehavior.OnEnable += AffixEchoBehavior_OnEnable;
-            On.RoR2.CharacterBody.AffixEchoBehavior.OnDisable += AffixEchoBehavior_OnDisable;
         }
 
-        private void AffixEchoBehavior_OnDisable(On.RoR2.CharacterBody.AffixEchoBehavior.orig_OnDisable orig, CharacterBody.AffixEchoBehavior self)
+        public override void OnBuffGained(CharacterBody self)
         {
-            if (self.spawnCard)
-                UnityEngine.Object.Destroy(self.spawnCard);
-            self.spawnCard = null;
-
-            for (int num = self.spawnedEchoes.Count - 1; num >= 0; num--)
-            {
-                if (self.spawnedEchoes[num])
-                {
-                    self.spawnedEchoes[num].TrueKill();
-                }
-            }
-
-            self.DestroySpawners();
+            if (NetworkServer.active && self.inventory?.GetItemCount(summonedEchoItem) == 0)
+                self.AddItemBehavior<CustomAffixEchoBehavior>(1);
         }
 
-        private void AffixEchoBehavior_OnEnable(On.RoR2.CharacterBody.AffixEchoBehavior.orig_OnEnable orig, CharacterBody.AffixEchoBehavior self)
+        public override void OnBuffLost(CharacterBody self)
         {
-            var itemCount = self.body.inventory ? self.body.inventory.GetItemCount(summonedEchoItem) : 0;
-            if (itemCount > 0)
-            {
-                self.enabled = false;
-                MonoBehaviour.Destroy(self);
-            }
-            else
-            {
-                orig(self);
-                Util.PlaySound("Play_voidRaid_fog_explode", self.gameObject);
-            }
+            if (NetworkServer.active)
+                self.AddItemBehavior<CustomAffixEchoBehavior>(0);
         }
 
         private void ReduceSummonHP(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            if (sender.inventory && sender.inventory.GetItemCount(summonedEchoItem) > 0)
+            if (sender.inventory?.GetItemCount(summonedEchoItem) > 0)
                 args.baseCurseAdd += 1f / 0.15f;
         }
 
@@ -96,11 +84,10 @@ namespace MoreElites
         {
             orig(self, body);
 
-            var itemCount = self.inventory ? self.inventory.GetItemCount(summonedEchoItem) : 0;
-            if (itemCount > 0 && !body.GetComponent<CustomSummonedEchoBodyBehavior>())
+            if (NetworkServer.active && self.inventory?.GetItemCount(summonedEchoItem) > 0 && body && !body.GetComponent<CustomSummonedEchoBodyBehavior>())
                 body.gameObject.AddComponent<CustomSummonedEchoBodyBehavior>();
         }
-
+        
         private void CharacterModel_UpdateOverlays(On.RoR2.CharacterModel.orig_UpdateOverlays orig, CharacterModel self)
         {
             orig(self);
@@ -118,26 +105,122 @@ namespace MoreElites
             }
         }
 
-        public override void OnBuffGained(CharacterBody self)
+        public class CustomAffixEchoBehavior : CharacterBody.ItemBehavior
         {
-            if (NetworkServer.active)
-                self.AddItemBehavior<CharacterBody.AffixEchoBehavior>(1);
+            public DeployableMinionSpawner echoSpawner1;
+            public DeployableMinionSpawner echoSpawner2;
+
+            public CharacterSpawnCard spawnCard;
+
+            public List<CharacterMaster> spawnedEchoes = new List<CharacterMaster>();
+
+            public bool hasEverSpawned;
+
+            public void FixedUpdate()
+            {
+                if (!hasEverSpawned)
+                {
+                    echoSpawner1.respawnStopwatch++;
+                    echoSpawner2.respawnStopwatch++;
+                }
+            }
+
+            public void Awake()
+            {
+                enabled = false;
+            }
+
+            public void OnEnable()
+            {
+                Util.PlaySound("Play_voidRaid_fog_explode", this.gameObject);
+
+                spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
+                spawnCard.prefab = MasterCatalog.GetMasterPrefab(MasterCatalog.FindAiMasterIndexForBody(body.bodyIndex));
+                spawnCard.inventoryToCopy = body.inventory;
+                spawnCard.nodeGraphType = body.isFlying ? MapNodeGroup.GraphType.Air : MapNodeGroup.GraphType.Ground;
+                spawnCard.equipmentToGrant = new EquipmentDef[1];
+                spawnCard.itemsToGrant =
+                [
+                    new ItemCountPair
+                    {
+                        itemDef = Instance.summonedEchoItem,
+                        count = 1
+                    }
+                ];
+
+                var rng = new Xoroshiro128Plus(Run.instance.seed ^ (ulong)GetInstanceID());
+                echoSpawner1 = CreateSpawner(rng);
+                echoSpawner2 = CreateSpawner(rng);
+            }
+
+            public void OnDisable()
+            {
+                if (spawnCard)
+                    Destroy(spawnCard);
+                spawnCard = null;
+
+                for (var num = spawnedEchoes.Count - 1; num >= 0; num--)
+                {
+                    if (spawnedEchoes[num])
+                        spawnedEchoes[num].TrueKill();
+                }
+                spawnedEchoes.Clear();
+
+                echoSpawner1?.Dispose();
+                echoSpawner1 = null;
+                echoSpawner2?.Dispose();
+                echoSpawner2 = null;
+            }
+
+            private DeployableMinionSpawner CreateSpawner(Xoroshiro128Plus rng)
+            {
+                var buddySpawner = new DeployableMinionSpawner(body.master, Instance.deployableSlot, rng)
+                {
+                    maxSpawnDistance = 20f,
+                    respawnInterval = 30f,
+                    respawnStopwatch = 0f,
+                    spawnCard = spawnCard
+                };
+
+                buddySpawner.onMinionSpawnedServer += delegate (SpawnCard.SpawnResult spawnResult)
+                {
+                    var spawnedInstance = spawnResult.spawnedInstance;
+                    if (!spawnedInstance)
+                        return;
+
+                    var spawnedMaster = spawnedInstance.GetComponent<CharacterMaster>();
+                    if (spawnedMaster)
+                    {
+                        hasEverSpawned = true;
+                        spawnedEchoes.Add(spawnedMaster);
+                        OnDestroyCallback.AddCallback(spawnedMaster.gameObject, delegate
+                        {
+                            spawnedEchoes.Remove(spawnedMaster);
+                        });
+                    }
+                };
+
+                return buddySpawner;
+            }
         }
 
-        public override void OnBuffLost(CharacterBody self)
+        public class CustomSummonedEchoBodyBehavior : MonoBehaviour
         {
-            if (NetworkServer.active)
-                self.AddItemBehavior<CharacterBody.AffixEchoBehavior>(0);
-        }
-
-        public class CustomSummonedEchoBodyBehavior : SummonedEchoBodyBehavior
-        {
+            private static float fireInterval = 3f;
             private static float normalBaseDamage = 24f;
             private static float normalLevelDamage = 4.8f;
             private static float championBaseDamage = 32f;
             private static float championLevelDamage = 7.2f;
 
-            private new void FixedUpdate()
+            private float fireTimer;
+            private CharacterBody body;
+
+            private void OnEnable()
+            {
+                this.body = this.GetComponent<CharacterBody>();
+            }
+
+            private void FixedUpdate()
             {
                 if (!(this.body && this.body.healthComponent && this.body.healthComponent.alive))
                     return;
@@ -148,8 +231,8 @@ namespace MoreElites
                     this.fireTimer = 0;
 
                     var damage = this.body.isChampion
-                        ? championBaseDamage + (championLevelDamage * this.body.level)
-                        : normalBaseDamage + (normalLevelDamage * this.body.level);
+                        ? championBaseDamage + championLevelDamage * this.body.level
+                        : normalBaseDamage + normalLevelDamage * this.body.level;
 
                     ProjectileManager.instance.FireProjectile(new FireProjectileInfo()
                     {
@@ -161,7 +244,7 @@ namespace MoreElites
                         position = this.body.aimOrigin,
                         rotation = Quaternion.LookRotation(Vector3.up),
                         procChainMask = default,
-                        projectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/EchoHunterProjectile"),
+                        projectilePrefab = Instance.echoProjectile,
                         force = 400f,
                         target = null
                     });

@@ -59,8 +59,8 @@ namespace MoreElites
         public virtual CustomElite CustomEliteDef { get; set; }
         public virtual CustomElite CustomEliteDefHonor { get; set; }
 
-        private float HealthBoostCoefficient => this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
-        private float DamageBoostCoefficient => this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
+        public float HealthBoostCoefficient => this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
+        public float DamageBoostCoefficient => this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
 
         public abstract void OnBuffGained(CharacterBody body);
         public abstract void OnBuffLost(CharacterBody body);
@@ -72,12 +72,6 @@ namespace MoreElites
                 foreach (var elite in EliteBase.EliteInstances)
                 {
                     elite.Init();
-                    ContentAddition.AddBuffDef(elite.EliteBuffDef);
-                    ItemAPI.Add(elite.CustomEquipmentDef);
-                    EliteAPI.Add(elite.CustomEliteDef);
-
-                    if (elite.CustomEliteDefHonor is not null)
-                        EliteAPI.Add(elite.CustomEliteDefHonor);
                 }
 
                 On.RoR2.CharacterBody.OnBuffFirstStackGained += CharacterBody_OnBuffFirstStackGained;
@@ -151,6 +145,8 @@ namespace MoreElites
             this.EliteBuffDef.isDebuff = false;
             this.EliteBuffDef.buffColor = EliteColor;
             this.EliteBuffDef.iconSprite = EliteIcon;
+
+            ContentAddition.AddBuffDef(this.EliteBuffDef);
         }
 
         public virtual void SetupEquipment()
@@ -177,6 +173,8 @@ namespace MoreElites
 
             foreach (var componentsInChild in this.CustomEquipmentDef.EquipmentDef.pickupModelPrefab.GetComponentsInChildren<Renderer>())
                 componentsInChild.material = this.EliteMaterial;
+
+            ItemAPI.Add(this.CustomEquipmentDef);
         }
 
         public virtual void SetupElite()
@@ -190,6 +188,7 @@ namespace MoreElites
             this.CustomEliteDef.EliteDef.damageBoostCoefficient = this.DamageBoostCoefficient;
 
             this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
+            EliteAPI.Add(this.CustomEliteDef);
 
             var honorTierDefs = this.GetVanillaEliteHonorTierDef(this.EliteTierDef);
             if (honorTierDefs is not null)
@@ -197,6 +196,7 @@ namespace MoreElites
                 this.CustomEliteDefHonor = new CustomElite($"Elite{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);
                 this.CustomEliteDefHonor.EliteDef.healthBoostCoefficient = PluginConfig.t1HonorHealthMult.Value;
                 this.CustomEliteDefHonor.EliteDef.damageBoostCoefficient = PluginConfig.t1HonorDamageMult.Value;
+                EliteAPI.Add(this.CustomEliteDefHonor);
             }
         }
 
@@ -207,7 +207,7 @@ namespace MoreElites
         // 4 - t1 + gold
         // 5 - t2
         // 6 - lunar
-        private IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteTierDef(EliteTier tier) => tier switch
+        internal IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteTierDef(EliteTier tier) => tier switch
         {
             EliteTier.None => null,
             EliteTier.T1 => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1], EliteAPI.VanillaEliteTiers[(int)EliteTier.T1Guilded]],
@@ -215,7 +215,7 @@ namespace MoreElites
             _ => [EliteAPI.VanillaEliteTiers[(int)tier]]
         };
 
-        private IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteHonorTierDef(EliteTier tier) => tier switch
+        internal IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteHonorTierDef(EliteTier tier) => tier switch
         {
             EliteTier.T1 => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1Honor], EliteAPI.VanillaEliteTiers[(int)EliteTier.T1GuildedHonor]],
             EliteTier.T1Guilded => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1GuildedHonor]],
