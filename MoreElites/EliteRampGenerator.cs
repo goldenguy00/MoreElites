@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RoR2BepInExPack.GameAssetPaths;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -8,7 +9,7 @@ namespace MoreElites
 {
     public static class EliteRampGenerator
     {
-        private static Material malachiteOverlayMat = new Material(Addressables.LoadAssetAsync<Material>("RoR2/Base/ElitePoison/matElitePoisonOverlay.mat").WaitForCompletion());
+        private static Material malachiteOverlayMat = new Material(Addressables.LoadAssetAsync<Material>(RoR2_Base_ElitePoison.matElitePoisonOverlay_mat).WaitForCompletion());
 
         // First 2 colors will be the most prominent, use darker/bolder colors for these 2, lighter/pastel colors will look very bright.
         // The other 3 add depth and texture on some enemies, that"s why 5 are required, so you don"t get flat colors.
@@ -58,6 +59,7 @@ namespace MoreElites
         
         internal static void SaveTextureToFile(Texture2D texture, string fileName)
         {
+            return;
           byte[] bytes = texture.EncodeToPNG();
           string path = System.IO.Path.Combine(Application.persistentDataPath, fileName);
           System.IO.File.WriteAllBytes(path, bytes);

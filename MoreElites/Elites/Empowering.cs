@@ -1,5 +1,6 @@
 using R2API;
 using RoR2;
+using RoR2BepInExPack.GameAssetPaths;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -8,7 +9,7 @@ namespace MoreElites
 {
     public class Empowering : EliteBase<Empowering>
     {
-        private GameObject EmpoweringWard = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/AffixHauntedWard.prefab").WaitForCompletion().InstantiateClone("EmpoweringWard");
+        private GameObject EmpoweringWard = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_EliteHaunted.AffixHauntedWard_prefab).WaitForCompletion().InstantiateClone("EmpoweringWard");
 
         public override string Name => "Empowering";
         public override string EquipmentName => "Empowering Aspect";
@@ -18,19 +19,19 @@ namespace MoreElites
 
         public override EliteTier EliteTierDef => (EliteTier)PluginConfig.eliteTierEmpowering.Value;
         public override Color EliteColor => new Color(1f, 0.5f, 0.0f);
-        public override Texture2D EliteRamp { get; set; } = Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/Common/ColorRamps/texRampMagmaWorm.png").WaitForCompletion();
-        public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
-        public override Sprite AspectIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
+        public override Texture2D EliteRamp { get; set; } = Addressables.LoadAssetAsync<Texture2D>(RoR2_Base_Common_ColorRamps.texRampMagmaWorm_png).WaitForCompletion();
+        public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_Base_EliteIce.texBuffAffixWhite_tif).WaitForCompletion();
+        public override Sprite AspectIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_DLC1_EliteEarth.texAffixEarthIcon_png).WaitForCompletion();
 
-        public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>("RoR2/Base/WardOnLevel/matWarbannerBuffRing.mat").WaitForCompletion();
-        public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion().InstantiateClone("PickupAffixEmpowering", false);
+        public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>(RoR2_Base_WardOnLevel.matWarbannerBuffRing_mat).WaitForCompletion();
+        public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_EliteFire.PickupEliteFire_prefab).WaitForCompletion().InstantiateClone("PickupAffixEmpowering", false);
 
         public override void Init()
         {
             base.Init();
 
             EmpoweringWard.transform.GetChild(0).GetChild(0).GetComponent<MeshRenderer>().material = EliteMaterial;
-            EmpoweringWard.GetComponent<BuffWard>().buffDef = Addressables.LoadAssetAsync<BuffDef>("RoR2/Base/WardOnLevel/bdWarbanner.asset").WaitForCompletion();
+            EmpoweringWard.GetComponent<BuffWard>().buffDef = Addressables.LoadAssetAsync<BuffDef>(RoR2_Base_WardOnLevel.bdWarbanner_asset).WaitForCompletion();
 
             Object.Destroy(EmpoweringWard.GetComponent<AkEvent>());
             Object.Destroy(EmpoweringWard.GetComponent<AkEvent>());

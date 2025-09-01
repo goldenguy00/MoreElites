@@ -7,6 +7,7 @@ using UnityEngine.AddressableAssets;
 using RoR2.Items;
 using System.Collections.Generic;
 using RoR2.Navigation;
+using RoR2BepInExPack.GameAssetPaths;
 
 namespace MoreElites
 {
@@ -34,23 +35,23 @@ namespace MoreElites
             new Color32(58, 38, 24, 255),
         ], 256, 8);
 
-        public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
-        public override Sprite AspectIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion();
-        public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/voidoutro/matVoidRaidCrabEyeOverlay1BLUE.mat").WaitForCompletion();
-        public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion().InstantiateClone("PickupAffixEcho", false);
+        public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_Base_EliteIce.texBuffAffixWhite_tif).WaitForCompletion();
+        public override Sprite AspectIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_DLC1_EliteEarth.texAffixEarthIcon_png).WaitForCompletion();
+        public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>(RoR2_DLC1_voidoutro.matVoidRaidCrabEyeOverlay1BLUE_mat).WaitForCompletion();
+        public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_EliteFire.PickupEliteFire_prefab).WaitForCompletion().InstantiateClone("PickupAffixEcho", false);
 
         public override void Init()
         {
             base.Init();
 
-            echoProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/InDev/EchoHunterProjectile.prefab").WaitForCompletion().InstantiateClone("EchoHunterProjectile");
+            echoProjectile = Addressables.LoadAssetAsync<GameObject>(RoR2_InDev.EchoHunterProjectile_prefab).WaitForCompletion().InstantiateClone("EchoHunterProjectile");
             echoProjectile.GetComponent<ProjectileDirectionalTargetFinder>().lookRange = 120;
 
-            summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>("RoR2/InDev/SummonedEcho.asset").WaitForCompletion();
-            echoMatBlack = Addressables.LoadAssetAsync<Material>("RoR2/InDev/matEcho.mat").WaitForCompletion();
+            summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>(RoR2_InDev.SummonedEcho_asset).WaitForCompletion();
+            echoMatBlack = Addressables.LoadAssetAsync<Material>(RoR2_InDev.matEcho_mat).WaitForCompletion();
             ContentAddition.AddItemDef(summonedEchoItem);
 
-            var celestineHalo = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/DisplayEliteStealthCrown.prefab").WaitForCompletion().InstantiateClone("EchoCrown");
+            var celestineHalo = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_EliteHaunted.DisplayEliteStealthCrown_prefab).WaitForCompletion().InstantiateClone("EchoCrown");
             celestineHalo.AddComponent<NetworkIdentity>();
 
             this.CustomEquipmentDef.ItemDisplayRules = ItemDisplays.CreateItemDisplayRules(celestineHalo, EliteMaterial);

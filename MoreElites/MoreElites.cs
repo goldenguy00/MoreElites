@@ -19,12 +19,12 @@ namespace MoreElites
         public const string PluginGUID = $"com.{PluginAuthor}.{PluginName}";
         public const string PluginAuthor = "Nuxlar";
         public const string PluginName = "MoreElites";
-        public const string PluginVersion = "1.2.0";
+        public const string PluginVersion = "1.2.1";
 
         public static MoreElites Instance { get; private set; }
 
         public static bool RooInstalled => Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
-        public static bool BlightedInstalled => Chainloader.PluginInfos.ContainsKey("com.Moffein.BlightedElites");
+        //public static bool BlightedInstalled => Chainloader.PluginInfos.ContainsKey("com.Moffein.BlightedElites");
 
         public void Awake()
         {
@@ -43,10 +43,8 @@ namespace MoreElites
                 new Volatile();
 
             EliteBase.CreateElites();
-
-            RoR2Application.onLoad += AddBlightedCompat;
         }
-
+        /*
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void AddBlightedCompat()
         {
@@ -87,6 +85,6 @@ namespace MoreElites
         private static void AddT2(EliteDef eliteDef)
         {
             BlightedElites.Components.AffixBlightedComponent.tier2Affixes.Add(eliteDef);
-        }
+        }*/
     }
 }

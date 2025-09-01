@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using R2API;
 using RoR2;
 using UnityEngine;
@@ -83,15 +82,15 @@ namespace MoreElites
         {
             orig(self, buffDef);
 
-            if (buffDef)
+            if (!buffDef)
+                return;
+
+            foreach (var elite in EliteInstances)
             {
-                foreach (var elite in EliteInstances)
+                if (elite?.EliteBuffDef == buffDef)
                 {
-                    if (elite?.EliteBuffDef == buffDef)
-                    {
-                        elite.OnBuffGained(self);
-                        return;
-                    }
+                    elite.OnBuffGained(self);
+                    return;
                 }
             }
         }
@@ -100,15 +99,15 @@ namespace MoreElites
         {
             orig(self, buffDef);
 
-            if (buffDef)
+            if (!buffDef)
+                return;
+
+            foreach (var elite in EliteInstances)
             {
-                foreach (var elite in EliteInstances)
+                if (elite?.EliteBuffDef == buffDef)
                 {
-                    if (elite?.EliteBuffDef == buffDef)
-                    {
-                        elite.OnBuffLost(self);
-                        return;
-                    }
+                    elite.OnBuffLost(self);
+                    return;
                 }
             }
         }

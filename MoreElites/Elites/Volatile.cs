@@ -1,6 +1,7 @@
 using R2API;
 using RoR2;
 using RoR2.Projectile;
+using RoR2BepInExPack.GameAssetPaths;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -8,9 +9,9 @@ namespace MoreElites
 {
     public class Volatile : EliteBase<Volatile>
     {
-        private GameObject VolatileProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/MissileProjectile.prefab").WaitForCompletion().InstantiateClone("AffixVolatileNuxProjectile");
-        private GameObject VolatileProjectileGhost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/MissileGhost.prefab").WaitForCompletion().InstantiateClone("AffixVolatileNuxProjectileGhost");
-        private GameObject behemoExplosion = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/VFX/OmniExplosionVFXQuick.prefab").WaitForCompletion();
+        private GameObject VolatileProjectile = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Common.MissileProjectile_prefab).WaitForCompletion().InstantiateClone("AffixVolatileNuxProjectile");
+        private GameObject VolatileProjectileGhost = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Common.MissileGhost_prefab).WaitForCompletion().InstantiateClone("AffixVolatileNuxProjectileGhost");
+        private GameObject behemoExplosion = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Common_VFX.OmniExplosionVFXQuick_prefab).WaitForCompletion();
 
         public override string Name => "Volatile";
         public override string EquipmentName => "Volatile Aspect";
@@ -20,19 +21,19 @@ namespace MoreElites
 
         public override EliteTier EliteTierDef => (EliteTier)PluginConfig.eliteTierVolatile.Value;
         public override Color EliteColor => Color.red;
-        public override Texture2D EliteRamp { get; set; } = Addressables.LoadAssetAsync<Texture2D>("RoR2/DLC1/Common/ColorRamps/texRampStrongerBurn.png").WaitForCompletion();
-        public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
-        public override Sprite AspectIcon { get; set; } = Sprite.Instantiate(Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/EliteEarth/texAffixEarthIcon.png").WaitForCompletion());
+        public override Texture2D EliteRamp { get; set; } = Addressables.LoadAssetAsync<Texture2D>(RoR2_DLC1_Common_ColorRamps.texRampStrongerBurn_png).WaitForCompletion();
+        public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_Base_EliteIce.texBuffAffixWhite_tif).WaitForCompletion();
+        public override Sprite AspectIcon { get; set; } = Sprite.Instantiate(Addressables.LoadAssetAsync<Sprite>(RoR2_DLC1_EliteEarth.texAffixEarthIcon_png).WaitForCompletion());
 
-        public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>("RoR2/Base/MagmaWorm/matMagmaWormFireball.mat").WaitForCompletion();
-        public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteFire/PickupEliteFire.prefab").WaitForCompletion().InstantiateClone("PickupAffixVolatile", false);
+        public override Material EliteMaterial { get; set; } = Addressables.LoadAssetAsync<Material>(RoR2_Base_MagmaWorm.matMagmaWormFireball_mat).WaitForCompletion();
+        public override GameObject PickupModelPrefab { get; set; } = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_EliteFire.PickupEliteFire_prefab).WaitForCompletion().InstantiateClone("PickupAffixVolatile", false);
 
         public override void Init()
         {
             base.Init();
 
-            VolatileProjectileGhost.transform.GetChild(0).GetComponent<TrailRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Base/MagmaWorm/matMagmaWormFireballTrail.mat").WaitForCompletion();
-            VolatileProjectileGhost.transform.GetChild(1).GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>("RoR2/Junk/Bandit/matThermiteFlare.mat").WaitForCompletion();
+            VolatileProjectileGhost.transform.GetChild(0).GetComponent<TrailRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>(RoR2_Base_MagmaWorm.matMagmaWormFireballTrail_mat).WaitForCompletion();
+            VolatileProjectileGhost.transform.GetChild(1).GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>(RoR2_Junk_Bandit.matThermiteFlare_mat).WaitForCompletion();
             VolatileProjectileGhost.transform.GetChild(2).GetComponent<MeshRenderer>().sharedMaterial = this.EliteMaterial;
             VolatileProjectileGhost.transform.GetChild(3).GetComponent<Light>().color = this.EliteColor;
             VolatileProjectile.GetComponent<ProjectileController>().ghostPrefab = this.VolatileProjectileGhost;
@@ -56,7 +57,7 @@ namespace MoreElites
 
             if (damageInfo.procCoefficient > 0f && !damageInfo.rejected && damageInfo.attacker && damageInfo.attacker.TryGetComponent<CharacterBody>(out var body))
             {
-                // dumb ass fix for zet aspect IL hook here, w/e
+                // dumb ass fix for zet aspect IL hook here, w_e
                 var eliteBuff = this.EliteBuffDef;
 
                 if (body.HasBuff(eliteBuff))
