@@ -178,8 +178,8 @@ namespace MoreElites
 
         public virtual void SetupElite()
         {
-            IEnumerable<CombatDirector.EliteTierDef> tierDefs = EliteAPI.GetEliteTierEnumerable(this.EliteTierDef);
-            if (tierDefs is null)
+            var tierDefs = EliteAPI.GetEliteTierEnumerable(this.EliteTierDef);
+            if (tierDefs?.Any() is not true)
                 return;
 
             this.CustomEliteDef = new CustomElite($"Elite{this.Name}", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", tierDefs, this.EliteRamp);
@@ -189,8 +189,8 @@ namespace MoreElites
             this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
             EliteAPI.Add(this.CustomEliteDef);
 
-            IEnumerable<CombatDirector.EliteTierDef> honorTierDefs = EliteAPI.GetHonorEliteTierEnumerable(this.EliteTierDef);
-            if (honorTierDefs is not null)
+            var honorTierDefs = EliteAPI.GetHonorEliteTierEnumerable(this.EliteTierDef);
+            if (honorTierDefs?.Any() is true)
             {
                 this.CustomEliteDefHonor = new CustomElite($"Elite{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);
                 this.CustomEliteDefHonor.EliteDef.healthBoostCoefficient = PluginConfig.t1HonorHealthMult.Value;
