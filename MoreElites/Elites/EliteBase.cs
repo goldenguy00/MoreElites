@@ -172,7 +172,7 @@ namespace MoreElites
 
             foreach (var componentsInChild in this.CustomEquipmentDef.EquipmentDef.pickupModelPrefab.GetComponentsInChildren<Renderer>())
                 componentsInChild.material = this.EliteMaterial;
-            IL.RoR2.UI.LoadoutPanelController.Row.FromSkin += (il) => { };
+
             ItemAPI.Add(this.CustomEquipmentDef);
         }
 
