@@ -82,7 +82,7 @@ namespace MoreElites
         {
             orig(self, buffDef);
 
-            if (!buffDef)
+            if (!buffDef || !self)
                 return;
 
             foreach (var elite in EliteInstances)
@@ -99,7 +99,7 @@ namespace MoreElites
         {
             orig(self, buffDef);
 
-            if (!buffDef)
+            if (!buffDef || !self)
                 return;
 
             foreach (var elite in EliteInstances)
