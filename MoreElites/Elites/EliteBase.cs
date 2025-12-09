@@ -159,7 +159,7 @@ namespace MoreElites
                 pickupIconSprite: this.AspectIcon,
                 pickupModelPrefab: this.PickupModelPrefab,
                 cooldown: 0f,
-                canDrop: false,
+                canDrop: true,
                 enigmaCompatible: false,
                 isBoss: false,
                 isLunar: false,
@@ -172,6 +172,8 @@ namespace MoreElites
 
             foreach (var componentsInChild in this.CustomEquipmentDef.EquipmentDef.pickupModelPrefab.GetComponentsInChildren<Renderer>())
                 componentsInChild.material = this.EliteMaterial;
+
+            this.CustomEquipmentDef.EquipmentDef.dropOnDeathChance = affixDropChance;
 
             ItemAPI.Add(this.CustomEquipmentDef);
         }
