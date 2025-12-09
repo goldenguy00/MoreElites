@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using BepInEx;
 using BepInEx.Configuration;
 using MiscFixes.Modules;
+using R2API;
 using UnityEngine;
 
 namespace MoreElites
@@ -14,9 +15,9 @@ namespace MoreElites
     {
         public enum ConfigTier
         {
-            Tier1 = 1,
-            GuildedTier = 4,
-            Tier2 = 5
+            Tier1 = VanillaEliteTier.BaseTier1,
+            GuildedTier = VanillaEliteTier.FullTier1,
+            Tier2 = VanillaEliteTier.Tier2
         }
 
         internal static ConfigFile MEConfig;
@@ -140,8 +141,6 @@ namespace MoreElites
                 "Vanilla T2 is 6. A good alt is 3.5. Does not affect vanilla T2s. Ignored if elite reworks is installed.",
                 6f,
                 1f, 10f);
-
-            WipeConfig();
         }
 
         #region Config Binding

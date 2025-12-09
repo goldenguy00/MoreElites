@@ -24,7 +24,7 @@ namespace MoreElites
         public override string DescriptionText => "Summon 2 copies of yourself";
         public override string LoreText => "Shadow clone jutsu";
 
-        public override EliteTier EliteTierDef => (EliteTier)PluginConfig.eliteTierEcho.Value;
+        public override VanillaEliteTier EliteTierDef => (VanillaEliteTier)PluginConfig.eliteTierEcho.Value;
         public override Color EliteColor => Color.black;
 
         public override Texture2D EliteRamp { get; set; } = EliteRampGenerator.CreateGradientTexture([

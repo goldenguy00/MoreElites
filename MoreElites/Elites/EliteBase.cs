@@ -44,7 +44,7 @@ namespace MoreElites
         public abstract string PickupText { get; }
         public abstract string LoreText { get; }
 
-        public abstract EliteTier EliteTierDef { get; }
+        public abstract VanillaEliteTier EliteTierDef { get; }
         public abstract Color EliteColor { get; }
         public abstract Texture2D EliteRamp { get; set; }
         public abstract Sprite EliteIcon { get; set; }
@@ -58,8 +58,8 @@ namespace MoreElites
         public virtual CustomElite CustomEliteDef { get; set; }
         public virtual CustomElite CustomEliteDefHonor { get; set; }
 
-        public float HealthBoostCoefficient => this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
-        public float DamageBoostCoefficient => this.EliteTierDef < EliteTier.T2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
+        public float HealthBoostCoefficient => this.EliteTierDef < VanillaEliteTier.Tier2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
+        public float DamageBoostCoefficient => this.EliteTierDef < VanillaEliteTier.Tier2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
 
         public abstract void OnBuffGained(CharacterBody body);
         public abstract void OnBuffLost(CharacterBody body);
@@ -172,13 +172,13 @@ namespace MoreElites
 
             foreach (var componentsInChild in this.CustomEquipmentDef.EquipmentDef.pickupModelPrefab.GetComponentsInChildren<Renderer>())
                 componentsInChild.material = this.EliteMaterial;
-
+            IL.RoR2.UI.LoadoutPanelController.Row.FromSkin += (il) => { };
             ItemAPI.Add(this.CustomEquipmentDef);
         }
 
         public virtual void SetupElite()
         {
-            var tierDefs = this.GetVanillaEliteTierDef(this.EliteTierDef);
+            IEnumerable<CombatDirector.EliteTierDef> tierDefs = EliteAPI.GetEliteTierEnumerable(this.EliteTierDef);
             if (tierDefs is null)
                 return;
 
@@ -189,7 +189,7 @@ namespace MoreElites
             this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
             EliteAPI.Add(this.CustomEliteDef);
 
-            var honorTierDefs = this.GetVanillaEliteHonorTierDef(this.EliteTierDef);
+            IEnumerable<CombatDirector.EliteTierDef> honorTierDefs = EliteAPI.GetHonorEliteTierEnumerable(this.EliteTierDef);
             if (honorTierDefs is not null)
             {
                 this.CustomEliteDefHonor = new CustomElite($"Elite{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);
@@ -198,27 +198,5 @@ namespace MoreElites
                 EliteAPI.Add(this.CustomEliteDefHonor);
             }
         }
-
-        // 0 - none
-        // 1 - t1
-        // 2 - t1 honor
-        // 3 - t1 + gold honor
-        // 4 - t1 + gold
-        // 5 - t2
-        // 6 - lunar
-        internal IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteTierDef(EliteTier tier) => tier switch
-        {
-            EliteTier.None => null,
-            EliteTier.T1 => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1], EliteAPI.VanillaEliteTiers[(int)EliteTier.T1Guilded]],
-            EliteTier.T1Honor => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1Honor], EliteAPI.VanillaEliteTiers[(int)EliteTier.T1GuildedHonor]],
-            _ => [EliteAPI.VanillaEliteTiers[(int)tier]]
-        };
-
-        internal IEnumerable<CombatDirector.EliteTierDef> GetVanillaEliteHonorTierDef(EliteTier tier) => tier switch
-        {
-            EliteTier.T1 => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1Honor], EliteAPI.VanillaEliteTiers[(int)EliteTier.T1GuildedHonor]],
-            EliteTier.T1Guilded => [EliteAPI.VanillaEliteTiers[(int)EliteTier.T1GuildedHonor]],
-            _ => null
-        };
     }
 }

@@ -17,7 +17,7 @@ namespace MoreElites
         public override string PickupText => "Buffs the move and attack speed of all allies.";
         public override string LoreText => "Do the impossible, see the invisible\r\nRow! Row! Fight the power!\r\nTouch the untouchable, break the unbreakable\r\nRow! Row! Fight the power!";
 
-        public override EliteTier EliteTierDef => (EliteTier)PluginConfig.eliteTierEmpowering.Value;
+        public override VanillaEliteTier EliteTierDef => (VanillaEliteTier)PluginConfig.eliteTierEmpowering.Value;
         public override Color EliteColor => new Color(1f, 0.5f, 0.0f);
         public override Texture2D EliteRamp { get; set; } = Addressables.LoadAssetAsync<Texture2D>(RoR2_Base_Common_ColorRamps.texRampMagmaWorm_png).WaitForCompletion();
         public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_Base_EliteIce.texBuffAffixWhite_tif).WaitForCompletion();

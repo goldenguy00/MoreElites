@@ -16,7 +16,7 @@ namespace MoreElites
         public override string DescriptionText => "Increased move and attack speed";
         public override string LoreText => "LET CHAOS BURN THE WORLD";
 
-        public override EliteTier EliteTierDef => (EliteTier)PluginConfig.eliteTierFrenzied.Value;
+        public override VanillaEliteTier EliteTierDef => (VanillaEliteTier)PluginConfig.eliteTierFrenzied.Value;
         public override Color EliteColor => Color.yellow;
         public override Texture2D EliteRamp { get; set; } = Addressables.LoadAssetAsync<Texture2D>(RoR2_Base_Common_ColorRamps.texRampWarbanner2_png).WaitForCompletion();
         public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_Base_EliteIce.texBuffAffixWhite_tif).WaitForCompletion();
