@@ -1,7 +1,7 @@
 using R2API;
 using RoR2;
 using RoR2.Projectile;
-using RoR2BepInExPack.GameAssetPaths;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -19,7 +19,7 @@ namespace MoreElites
         public override string DescriptionText => "All attacks explode and periodically fire missiles.";
         public override string LoreText => "Hope you like dodging";
 
-        public override VanillaEliteTier EliteTierDef => (VanillaEliteTier)PluginConfig.eliteTierVolatile.Value;
+        public override VanillaEliteTier EliteTierEnum => (VanillaEliteTier)PluginConfig.eliteTierVolatile.Value;
         public override Color EliteColor => Color.red;
         public override Texture2D EliteRamp { get; set; } = Addressables.LoadAssetAsync<Texture2D>(RoR2_DLC1_Common_ColorRamps.texRampStrongerBurn_png).WaitForCompletion();
         public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_Base_EliteIce.texBuffAffixWhite_tif).WaitForCompletion();

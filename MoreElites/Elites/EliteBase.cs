@@ -44,7 +44,7 @@ namespace MoreElites
         public abstract string PickupText { get; }
         public abstract string LoreText { get; }
 
-        public abstract VanillaEliteTier EliteTierDef { get; }
+        public abstract VanillaEliteTier EliteTierEnum { get; }
         public abstract Color EliteColor { get; }
         public abstract Texture2D EliteRamp { get; set; }
         public abstract Sprite EliteIcon { get; set; }
@@ -58,8 +58,8 @@ namespace MoreElites
         public virtual CustomElite CustomEliteDef { get; set; }
         public virtual CustomElite CustomEliteDefHonor { get; set; }
 
-        public float HealthBoostCoefficient => this.EliteTierDef < VanillaEliteTier.Tier2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
-        public float DamageBoostCoefficient => this.EliteTierDef < VanillaEliteTier.Tier2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
+        public float HealthBoostCoefficient => this.EliteTierEnum < VanillaEliteTier.Tier2 ? PluginConfig.t1HealthMult.Value : PluginConfig.t2HealthMult.Value;
+        public float DamageBoostCoefficient => this.EliteTierEnum < VanillaEliteTier.Tier2 ? PluginConfig.t1DamageMult.Value : PluginConfig.t2DamageMult.Value;
 
         public abstract void OnBuffGained(CharacterBody body);
         public abstract void OnBuffLost(CharacterBody body);
@@ -180,7 +180,7 @@ namespace MoreElites
 
         public virtual void SetupElite()
         {
-            var tierDefs = EliteAPI.GetEliteTierEnumerable(this.EliteTierDef);
+            var tierDefs = EliteAPI.GetEliteTierEnumerable(this.EliteTierEnum);
             if (tierDefs?.Any() is not true)
                 return;
 
@@ -191,7 +191,7 @@ namespace MoreElites
             this.EliteBuffDef.eliteDef = this.CustomEliteDef.EliteDef;
             EliteAPI.Add(this.CustomEliteDef);
 
-            var honorTierDefs = EliteAPI.GetHonorEliteTierEnumerable(this.EliteTierDef);
+            var honorTierDefs = EliteAPI.GetHonorEliteTierEnumerable(this.EliteTierEnum);
             if (honorTierDefs?.Any() is true)
             {
                 this.CustomEliteDefHonor = new CustomElite($"Elite{this.Name}Honor", this.CustomEquipmentDef.EquipmentDef, this.EliteColor, $"ELITE_MODIFIER_{this.NameToken}", honorTierDefs, this.EliteRamp);

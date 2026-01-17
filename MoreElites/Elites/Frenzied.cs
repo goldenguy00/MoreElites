@@ -1,6 +1,6 @@
 using R2API;
 using RoR2;
-using RoR2BepInExPack.GameAssetPaths;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace MoreElites
         public override string DescriptionText => "Increased move and attack speed";
         public override string LoreText => "LET CHAOS BURN THE WORLD";
 
-        public override VanillaEliteTier EliteTierDef => (VanillaEliteTier)PluginConfig.eliteTierFrenzied.Value;
+        public override VanillaEliteTier EliteTierEnum => (VanillaEliteTier)PluginConfig.eliteTierFrenzied.Value;
         public override Color EliteColor => Color.yellow;
         public override Texture2D EliteRamp { get; set; } = Addressables.LoadAssetAsync<Texture2D>(RoR2_Base_Common_ColorRamps.texRampWarbanner2_png).WaitForCompletion();
         public override Sprite EliteIcon { get; set; } = Addressables.LoadAssetAsync<Sprite>(RoR2_Base_EliteIce.texBuffAffixWhite_tif).WaitForCompletion();

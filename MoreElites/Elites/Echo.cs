@@ -7,7 +7,8 @@ using UnityEngine.AddressableAssets;
 using RoR2.Items;
 using System.Collections.Generic;
 using RoR2.Navigation;
-using RoR2BepInExPack.GameAssetPaths;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+using HG;
 
 namespace MoreElites
 {
@@ -24,7 +25,7 @@ namespace MoreElites
         public override string DescriptionText => "Summon 2 copies of yourself";
         public override string LoreText => "Shadow clone jutsu";
 
-        public override VanillaEliteTier EliteTierDef => (VanillaEliteTier)PluginConfig.eliteTierEcho.Value;
+        public override VanillaEliteTier EliteTierEnum => (VanillaEliteTier)PluginConfig.eliteTierEcho.Value;
         public override Color EliteColor => Color.black;
 
         public override Texture2D EliteRamp { get; set; } = EliteRampGenerator.CreateGradientTexture([
@@ -59,13 +60,13 @@ namespace MoreElites
             deployableSlot = DeployableAPI.RegisterDeployableSlot((_, _) => 2);
 
             RecalculateStatsAPI.GetStatCoefficients += ReduceSummonHP;
-            On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
+            CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
             On.RoR2.CharacterModel.UpdateOverlays += CharacterModel_UpdateOverlays;
         }
 
         public override void OnBuffGained(CharacterBody self)
         {
-            if (NetworkServer.active && self.inventory?.GetItemCount(summonedEchoItem) == 0)
+            if (NetworkServer.active && self.inventory && self.inventory.GetItemCountPermanent(summonedEchoItem) == 0)
                 self.AddItemBehavior<CustomAffixEchoBehavior>(1);
         }
 
@@ -77,16 +78,14 @@ namespace MoreElites
 
         private void ReduceSummonHP(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            if (sender.inventory?.GetItemCount(summonedEchoItem) > 0)
+            if (sender.inventory && sender.inventory.GetItemCountPermanent(summonedEchoItem) > 0)
                 args.baseCurseAdd += 1f / 0.15f;
         }
 
-        private void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
+        private void CharacterBody_onBodyStartGlobal(CharacterBody body)
         {
-            orig(self, body);
-
-            if (NetworkServer.active && self.inventory?.GetItemCount(summonedEchoItem) > 0 && body && !body.GetComponent<CustomSummonedEchoBodyBehavior>())
-                body.gameObject.AddComponent<CustomSummonedEchoBodyBehavior>();
+            if (NetworkServer.active && body.inventory && body.inventory.GetItemCountPermanent(summonedEchoItem) > 0 && !body.GetComponent<CustomSummonedEchoBodyBehavior>())
+                body.EnsureComponent<CustomSummonedEchoBodyBehavior>();
         }
         
         private void CharacterModel_UpdateOverlays(On.RoR2.CharacterModel.orig_UpdateOverlays orig, CharacterModel self)
@@ -96,7 +95,7 @@ namespace MoreElites
             if (self.body && self.body.inventory)
             {
                 AddOverlay(EliteMaterial, self.body.HasBuff(EliteBuffDef));
-                AddOverlay(echoMatBlack, self.body.inventory.GetItemCount(summonedEchoItem) > 0);
+                AddOverlay(echoMatBlack, self.body.inventory.GetItemCountPermanent(summonedEchoItem) > 0);
             }
 
             void AddOverlay(Material overlayMaterial, bool condition)
