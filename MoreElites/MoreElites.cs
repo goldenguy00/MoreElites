@@ -19,7 +19,7 @@ namespace MoreElites
         public const string PluginGUID = $"com.{PluginAuthor}.{PluginName}";
         public const string PluginAuthor = "Nuxlar";
         public const string PluginName = "MoreElites";
-        public const string PluginVersion = "1.2.2";
+        public const string PluginVersion = "1.2.4";
 
         public static MoreElites Instance { get; private set; }
 

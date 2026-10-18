@@ -44,7 +44,8 @@ namespace MoreElites
             missileController.giveupTimer = 4;
             missileController.maxVelocity = 20;
             missileController.turbulence = 6f;
-
+            ContentAddition.AddProjectile(VolatileProjectile);
+            
             On.RoR2.GlobalEventManager.OnHitAll += AddBehemoExplosion;
         }
 

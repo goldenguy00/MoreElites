@@ -47,6 +47,7 @@ namespace MoreElites
 
             echoProjectile = Addressables.LoadAssetAsync<GameObject>(RoR2_InDev.EchoHunterProjectile_prefab).WaitForCompletion().InstantiateClone("EchoHunterProjectile");
             echoProjectile.GetComponent<ProjectileDirectionalTargetFinder>().lookRange = 120;
+            ContentAddition.AddProjectile(echoProjectile);
 
             summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>(RoR2_InDev.SummonedEcho_asset).WaitForCompletion();
             echoMatBlack = Addressables.LoadAssetAsync<Material>(RoR2_InDev.matEcho_mat).WaitForCompletion();
