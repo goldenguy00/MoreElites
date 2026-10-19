@@ -1,0 +1,10 @@
+﻿{
+    "name": "MoreElites",
+    "author": "score",
+    "version_number": "1.2.5",
+    "website_url": "https://thunderstore.io/c/riskofrain2/p/TechDebtCollector/MoreElites/",
+    "description": "MOVED TO NEW AUTHOR",
+    "dependencies": [
+        "TechDebtCollector-MoreElites-1.3.0"
+    ]
+}

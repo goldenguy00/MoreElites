@@ -14,10 +14,10 @@ namespace MoreElites
 {
     public class Echo : EliteBase<Echo>
     {
-        public ItemDef summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>(RoR2_Junk.SummonedEcho_asset).WaitForCompletion();
+        public ItemDef summonedEchoItem = ScriptableObject.Instantiate(Addressables.LoadAssetAsync<ItemDef>(RoR2_Junk.SummonedEcho_asset).WaitForCompletion());
         public Material echoMatBlack = Addressables.LoadAssetAsync<Material>(RoR2_Junk.matEcho_mat).WaitForCompletion();
         public DeployableSlot deployableSlot = DeployableAPI.RegisterDeployableSlot((_, _) => 2);
-        public GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>(RoR2_Junk.EchoHunterProjectile_prefab).WaitForCompletion().InstantiateClone("EchoHunterProjectile");
+        public GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>(RoR2_Junk.EchoHunterProjectile_prefab).WaitForCompletion().InstantiateClone("EchoHunterProjectileNuxlar");
 
         public override string Name => "Echo";
         public override string EquipmentName => "Echo Aspect";
@@ -48,6 +48,8 @@ namespace MoreElites
             echoProjectile.GetComponent<ProjectileDirectionalTargetFinder>().lookRange = 120;
             ContentAddition.AddProjectile(echoProjectile);
             ContentAddition.AddItemDef(summonedEchoItem);
+            summonedEchoItem.name = "SummonedEchoNuxlar";
+            summonedEchoItem.nameToken = "SummonedEchoNuxlar";
 
             var celestineHalo = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_EliteHaunted.DisplayEliteStealthCrown_prefab).WaitForCompletion().InstantiateClone("EchoCrown");
             celestineHalo.AddComponent<NetworkIdentity>();

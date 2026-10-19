@@ -9,6 +9,11 @@ namespace MoreElites
 {
     public static class ItemDisplays
     {
+        public static void Init()
+        {
+
+        }
+
         private static void ItemDisplaySetup(GameObject prefab)
         {
             List<Renderer> rendererList = 

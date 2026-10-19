@@ -3,7 +3,6 @@ using System.Security;
 using System.Security.Permissions;
 using BepInEx;
 using BepInEx.Bootstrap;
-using RoR2;
 
 [module: UnverifiableCode]
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -13,13 +12,20 @@ using RoR2;
 namespace MoreElites
 {
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.DeployableAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.EliteAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.ItemAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.PrefabAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     public class MoreElites : BaseUnityPlugin
     {
         public const string PluginGUID = $"com.{PluginAuthor}.{PluginName}";
         public const string PluginAuthor = "Nuxlar";
         public const string PluginName = "MoreElites";
-        public const string PluginVersion = "1.2.4";
+        public const string PluginVersion = "1.3.0";
 
         public static MoreElites Instance { get; private set; }
 
@@ -32,6 +38,7 @@ namespace MoreElites
 
             Log.Init(Logger);
             PluginConfig.Init();
+            ItemDisplays.Init();
 
             if (PluginConfig.enableEcho.Value)
                 new Echo();
