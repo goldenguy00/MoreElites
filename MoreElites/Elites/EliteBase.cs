@@ -159,7 +159,7 @@ namespace MoreElites
                 pickupIconSprite: this.AspectIcon,
                 pickupModelPrefab: this.PickupModelPrefab,
                 cooldown: 0f,
-                canDrop: true,
+                canDrop: false,
                 enigmaCompatible: false,
                 isBoss: false,
                 isLunar: false,
