@@ -1,4 +1,4 @@
-﻿using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+﻿using RoR2BepInExPack.GameAssetPathsBetter;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -45,8 +45,8 @@ namespace MoreElites
             // Apply changes to the texture
             texture.Apply();
             
-            string fileName = "SavedTexture.png";
-            SaveTextureToFile(texture, fileName);
+            //string fileName = "SavedTexture.png";
+            //SaveTextureToFile(texture, fileName);
             
             malachiteOverlayMat.SetTexture("_RemapTex", texture);
 
@@ -56,7 +56,6 @@ namespace MoreElites
         
         internal static void SaveTextureToFile(Texture2D texture, string fileName)
         {
-            return;
           byte[] bytes = texture.EncodeToPNG();
           string path = System.IO.Path.Combine(Application.persistentDataPath, fileName);
           System.IO.File.WriteAllBytes(path, bytes);

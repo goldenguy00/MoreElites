@@ -7,17 +7,17 @@ using UnityEngine.AddressableAssets;
 using RoR2.Items;
 using System.Collections.Generic;
 using RoR2.Navigation;
-using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using HG;
 
 namespace MoreElites
 {
     public class Echo : EliteBase<Echo>
     {
-        public ItemDef summonedEchoItem;
-        public Material echoMatBlack;
-        public DeployableSlot deployableSlot;
-        public GameObject echoProjectile;
+        public ItemDef summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>(RoR2_Junk.SummonedEcho_asset).WaitForCompletion();
+        public Material echoMatBlack = Addressables.LoadAssetAsync<Material>(RoR2_Junk.matEcho_mat).WaitForCompletion();
+        public DeployableSlot deployableSlot = DeployableAPI.RegisterDeployableSlot((_, _) => 2);
+        public GameObject echoProjectile = Addressables.LoadAssetAsync<GameObject>(RoR2_Junk.EchoHunterProjectile_prefab).WaitForCompletion().InstantiateClone("EchoHunterProjectile");
 
         public override string Name => "Echo";
         public override string EquipmentName => "Echo Aspect";
@@ -45,20 +45,14 @@ namespace MoreElites
         {
             base.Init();
 
-            echoProjectile = Addressables.LoadAssetAsync<GameObject>(RoR2_InDev.EchoHunterProjectile_prefab).WaitForCompletion().InstantiateClone("EchoHunterProjectile");
             echoProjectile.GetComponent<ProjectileDirectionalTargetFinder>().lookRange = 120;
             ContentAddition.AddProjectile(echoProjectile);
-
-            summonedEchoItem = Addressables.LoadAssetAsync<ItemDef>(RoR2_InDev.SummonedEcho_asset).WaitForCompletion();
-            echoMatBlack = Addressables.LoadAssetAsync<Material>(RoR2_InDev.matEcho_mat).WaitForCompletion();
             ContentAddition.AddItemDef(summonedEchoItem);
 
             var celestineHalo = Addressables.LoadAssetAsync<GameObject>(RoR2_Base_EliteHaunted.DisplayEliteStealthCrown_prefab).WaitForCompletion().InstantiateClone("EchoCrown");
             celestineHalo.AddComponent<NetworkIdentity>();
 
             this.CustomEquipmentDef.ItemDisplayRules = ItemDisplays.CreateItemDisplayRules(celestineHalo, EliteMaterial);
-
-            deployableSlot = DeployableAPI.RegisterDeployableSlot((_, _) => 2);
 
             RecalculateStatsAPI.GetStatCoefficients += ReduceSummonHP;
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
@@ -68,13 +62,17 @@ namespace MoreElites
         public override void OnBuffGained(CharacterBody self)
         {
             if (NetworkServer.active && self.inventory && self.inventory.GetItemCountPermanent(summonedEchoItem) == 0)
+#pragma warning disable CS0618 // Type or member is obsolete
                 self.AddItemBehavior<CustomAffixEchoBehavior>(1);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public override void OnBuffLost(CharacterBody self)
         {
             if (NetworkServer.active)
+#pragma warning disable CS0618 // Type or member is obsolete
                 self.AddItemBehavior<CustomAffixEchoBehavior>(0);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         private void ReduceSummonHP(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
@@ -106,7 +104,9 @@ namespace MoreElites
             }
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public class CustomAffixEchoBehavior : CharacterBody.ItemBehavior
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             public DeployableMinionSpawner echoSpawner1;
             public DeployableMinionSpawner echoSpawner2;

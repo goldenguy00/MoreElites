@@ -1,7 +1,7 @@
 using R2API;
 using RoR2;
 using RoR2.Projectile;
-using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -36,7 +36,10 @@ namespace MoreElites
             VolatileProjectileGhost.transform.GetChild(1).GetComponent<ParticleSystemRenderer>().sharedMaterial = Addressables.LoadAssetAsync<Material>(RoR2_Junk_Bandit.matThermiteFlare_mat).WaitForCompletion();
             VolatileProjectileGhost.transform.GetChild(2).GetComponent<MeshRenderer>().sharedMaterial = this.EliteMaterial;
             VolatileProjectileGhost.transform.GetChild(3).GetComponent<Light>().color = this.EliteColor;
+            VolatileProjectile.GetComponent<ProjectileController>().ghostPrefabAddress = null;
+#pragma warning disable CS0618 // Type or member is obsolete
             VolatileProjectile.GetComponent<ProjectileController>().ghostPrefab = this.VolatileProjectileGhost;
+#pragma warning restore CS0618 // Type or member is obsolete
 
             var missileController = VolatileProjectile.GetComponent<MissileController>();
             missileController.acceleration = 2;
@@ -49,8 +52,10 @@ namespace MoreElites
             On.RoR2.GlobalEventManager.OnHitAll += AddBehemoExplosion;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public override void OnBuffGained(CharacterBody self) => self.AddItemBehavior<VolatileMissileController>(1);
         public override void OnBuffLost(CharacterBody self) => self.AddItemBehavior<VolatileMissileController>(0);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         private void AddBehemoExplosion(On.RoR2.GlobalEventManager.orig_OnHitAll orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
         {
@@ -92,7 +97,9 @@ namespace MoreElites
             }
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public class VolatileMissileController : CharacterBody.ItemBehavior
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             private static float normalBaseDamage = 12f;
             private static float normalLevelDamage = 2.4f;

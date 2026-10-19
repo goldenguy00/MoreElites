@@ -1,6 +1,6 @@
 using R2API;
 using RoR2;
-using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -41,8 +41,10 @@ namespace MoreElites
             this.CustomEquipmentDef.EquipmentDef.name += "Nuxlar";
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public override void OnBuffGained(CharacterBody self) => self.AddItemBehavior<FrenziedTeleportController>(1);
         public override void OnBuffLost(CharacterBody self) => self.AddItemBehavior<FrenziedTeleportController>(0);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         private bool EquipmentSlot_PerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentDef equipmentDef)
         {
@@ -68,7 +70,9 @@ namespace MoreElites
             }
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public class FrenziedTeleportController : CharacterBody.ItemBehavior
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             private static float fireInterval = 10f;
             private static GameObject blinkPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2_Junk_Treebot.SonicBoomEffect_prefab).WaitForCompletion();

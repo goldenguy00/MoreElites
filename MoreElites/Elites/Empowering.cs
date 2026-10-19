@@ -1,6 +1,6 @@
 using R2API;
 using RoR2;
-using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -38,12 +38,14 @@ namespace MoreElites
             Object.Destroy(EmpoweringWard.GetComponent<AkGameObj>());
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public override void OnBuffGained(CharacterBody self) => self.AddItemBehavior<AffixEmpoweringBehavior>(1);
         public override void OnBuffLost(CharacterBody self) => self.AddItemBehavior<AffixEmpoweringBehavior>(0);
 
 
         public class AffixEmpoweringBehavior : CharacterBody.ItemBehavior
         {
+#pragma warning restore CS0618 // Type or member is obsolete
             public GameObject affixEmpoweringWardInstance;
 
             public void FixedUpdate()

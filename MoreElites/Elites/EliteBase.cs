@@ -170,9 +170,12 @@ namespace MoreElites
                 appearsInSinglePlayer: true,
                 itemDisplayRules: (ItemDisplayRuleDict)null);
 
+#pragma warning disable CS0618 // Type or member is obsolete
             foreach (var componentsInChild in this.CustomEquipmentDef.EquipmentDef.pickupModelPrefab.GetComponentsInChildren<Renderer>())
                 componentsInChild.material = this.EliteMaterial;
+#pragma warning restore CS0618 // Type or member is obsolete
 
+            this.CustomEquipmentDef.EquipmentDef.pickupModelReference = null;
             this.CustomEquipmentDef.EquipmentDef.dropOnDeathChance = affixDropChance;
 
             ItemAPI.Add(this.CustomEquipmentDef);
